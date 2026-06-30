@@ -29,6 +29,18 @@
 //
 // Octopus Core wires organs together.
 // It does not become the organs.
+//
+// LOCKED ORGAN LIST:
+// Biff — perspective suction cup
+// CyberAssistant — meaning check
+// Secretary — placement
+// Turnstile — entry
+// Pole — elevation
+// Window — surface
+// Touch — touch lane
+// Arena — crowd lane
+// Movement — movement lanes
+// Memory — ledger
 
 export type OctopusOrganName =
   | "biff"
@@ -38,8 +50,9 @@ export type OctopusOrganName =
   | "pole"
   | "window"
   | "touch"
-  | "memory"
-  | "movement";
+  | "arena"
+  | "movement"
+  | "memory";
 
 export type OctopusStatus =
   | "idle"
@@ -154,6 +167,7 @@ export class OctopusCore {
       "pole",
       "window",
       "touch",
+      "arena",
       "movement",
       "memory"
     ];
@@ -434,8 +448,9 @@ function cleanOrganName(value: unknown): OctopusOrganName | null {
     value === "pole" ||
     value === "window" ||
     value === "touch" ||
-    value === "memory" ||
-    value === "movement"
+    value === "arena" ||
+    value === "movement" ||
+    value === "memory"
   ) {
     return value;
   }
