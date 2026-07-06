@@ -1,8 +1,9 @@
 // js/pixelprix-describe.js
 // PixelPrix Core — Describe Layer
 // Owns: "What is it?", typed treasure names, phonics / sounds-like labels, cleanup name display.
-// Does not own: HTML layout, camera permission, camera capture, mic recording, song layer, NET, uploads, sync, accounts, or provider transport.
-// Rule: Typing adds clarity. Phonics fixes pronunciation. Touch still works. Voice remains optional.
+// Does not own: HTML layout, camera permission, camera capture, mic recording, song layer, NET, uploads, sync, accounts, analytics, or provider transport.
+// Rule: Typing adds clarity. Phonics fixes pronunciation. Touch still works.
+// Lane rule: Computer guide is textual. Voice guide is speech. This file does not show text fields in voice mode.
 // One-action rule: This layer adds no extra action buttons. The big game button remains the only road.
 
 (function () {
@@ -272,6 +273,11 @@
   }
 
   function showDescribeCard(treasureNumber) {
+    if (!isComputerGuide()) {
+      removeDescribeCard();
+      return;
+    }
+
     if (!dom.panel) {
       return;
     }
@@ -281,15 +287,13 @@
     state.activeTreasureNumber = treasureNumber;
 
     const saved = labelFor(treasureNumber);
-    const computerCopy = "Type the word. The big game button keeps moving.";
-    const voiceCopy = "Voice can still work. Type a word too if you want.";
 
     const card = document.createElement("section");
     card.id = "pixelprix-describe-card";
     card.className = "pixelprix-describe-card";
     card.innerHTML = `
       <h2>What is it?</h2>
-      <p>${isComputerGuide() ? computerCopy : voiceCopy}</p>
+      <p>Type the word. The big game button keeps moving.</p>
 
       <div class="pixelprix-describe-fields">
         <label class="pixelprix-describe-label" for="pixelprix-item-name">
@@ -356,6 +360,10 @@
   }
 
   function saveWord(treasureNumber) {
+    if (!isComputerGuide()) {
+      return false;
+    }
+
     const nameInput = byId("pixelprix-item-name");
     const phonicsInput = byId("pixelprix-item-phonics");
 
@@ -422,6 +430,11 @@
   }
 
   function showCleanupCard(treasureNumber) {
+    if (!isComputerGuide()) {
+      removeCleanupCard();
+      return;
+    }
+
     if (!dom.panel) {
       return;
     }
@@ -449,9 +462,7 @@
 
     dom.panel.appendChild(card);
 
-    if (isComputerGuide()) {
-      sayTreasure(treasureNumber, false);
-    }
+    sayTreasure(treasureNumber, false);
   }
 
   function escapeHtml(value) {
@@ -464,6 +475,11 @@
   }
 
   function watchTreasurePictures() {
+    if (!isComputerGuide()) {
+      removeDescribeCard();
+      return;
+    }
+
     const count = countTreasurePictures();
 
     if (count > state.lastTreasureCount) {
@@ -473,6 +489,11 @@
   }
 
   function watchCleanup() {
+    if (!isComputerGuide()) {
+      removeCleanupCard();
+      return;
+    }
+
     const number = cleanupNumberFromPrompt();
 
     if (!number) {
