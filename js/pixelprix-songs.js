@@ -1,8 +1,9 @@
 // js/pixelprix-songs.js
 // PixelPrix Core — Song Layer
 // Owns: optional computer guide songs for PixelPrix game energy.
-// Does not own: HTML layout, camera permission, camera capture, mic recording, voice labels, NET, uploads, sync, or accounts.
+// Does not own: HTML layout, camera permission, camera capture, mic recording, voice labels, describe layer, lingo layer, NET, uploads, sync, accounts, analytics, or provider transport.
 // Rule: Songs add fun. Songs do not block play. Touch still works.
+// One-action rule: This layer adds no visible buttons. The big game button remains the only road.
 
 (function () {
   "use strict";
@@ -31,29 +32,26 @@
 
   const state = {
     enabled: true,
-    trayOpen: false,
+    unlocked: false,
     currentKey: "",
-    lastAutoKey: "",
+    wantedKey: "funBuddy",
     playing: false,
-    booted: false
+    booted: false,
+    retryTimer: null
   };
 
   const dom = {
     title: null,
     prompt: null,
     helper: null,
-    mainButton: null,
-    secondButton: null,
-    dock: null,
-    toggle: null,
-    tray: null,
-    status: null
+    mainButton: null
   };
 
   const audio = new Audio();
 
   audio.preload = "auto";
-  audio.loop = false;
+  audio.loop = true;
+  audio.volume = 0.52;
 
   function byId(id) {
     return document.getElementById(id);
@@ -64,7 +62,6 @@
     dom.prompt = byId("prompt");
     dom.helper = byId("helper");
     dom.mainButton = byId("main-button");
-    dom.secondButton = byId("second-button");
   }
 
   function readText(node) {
@@ -77,7 +74,7 @@
       readText(dom.prompt),
       readText(dom.helper),
       dom.mainButton ? readText(dom.mainButton) : ""
-    ].join(" ");
+    ].join(" ").toLowerCase();
   }
 
   function loadPreference() {
@@ -94,241 +91,62 @@
     } catch (error) {}
   }
 
-  function injectStyle() {
-    if (byId("pixelprix-songs-style")) {
-      return;
-    }
-
-    const style = document.createElement("style");
-    style.id = "pixelprix-songs-style";
-    style.textContent = `
-      .pixelprix-song-dock {
-        position: fixed;
-        top: calc(62px + env(safe-area-inset-top));
-        right: 12px;
-        z-index: 8;
-        width: min(270px, calc(100vw - 24px));
-        font-family: Arial, Helvetica, sans-serif;
-        pointer-events: none;
-      }
-
-      .pixelprix-song-dock * {
-        box-sizing: border-box;
-      }
-
-      .pixelprix-song-toggle,
-      .pixelprix-song-button,
-      .pixelprix-song-stop {
-        width: 100%;
-        border: 0;
-        border-radius: 999px;
-        color: #050505;
-        font: inherit;
-        font-weight: 900;
-        cursor: pointer;
-        touch-action: manipulation;
-        box-shadow: 0 5px 0 rgba(0, 0, 0, 0.62);
-        pointer-events: auto;
-      }
-
-      .pixelprix-song-toggle {
-        min-height: 46px;
-        padding: 9px 12px;
-        background: #6dff91;
-        font-size: 0.95rem;
-      }
-
-      .pixelprix-song-toggle.off {
-        background: #ffd34d;
-      }
-
-      .pixelprix-song-tray {
-        display: none;
-        margin-top: 8px;
-        padding: 10px;
-        border-radius: 24px;
-        background: rgba(5, 6, 10, 0.84);
-        border: 2px solid rgba(255, 255, 255, 0.24);
-        box-shadow: 0 14px 34px rgba(0, 0, 0, 0.55);
-        backdrop-filter: blur(7px);
-        pointer-events: auto;
-      }
-
-      .pixelprix-song-dock.open .pixelprix-song-tray {
-        display: grid;
-        gap: 8px;
-      }
-
-      .pixelprix-song-button {
-        min-height: 50px;
-        padding: 10px;
-        background: #7bd4ff;
-        font-size: 0.95rem;
-      }
-
-      .pixelprix-song-button.pickup {
-        background: #ffd34d;
-      }
-
-      .pixelprix-song-button.goodnight {
-        background: #c79cff;
-      }
-
-      .pixelprix-song-stop {
-        min-height: 46px;
-        padding: 9px;
-        background: #ff8bd1;
-        font-size: 0.92rem;
-      }
-
-      .pixelprix-song-toggle:active,
-      .pixelprix-song-button:active,
-      .pixelprix-song-stop:active {
-        transform: translateY(4px);
-        box-shadow: 0 2px 0 rgba(0, 0, 0, 0.62);
-      }
-
-      .pixelprix-song-status {
-        min-height: 20px;
-        color: #fff7df;
-        font-size: 0.85rem;
-        font-weight: 900;
-        text-align: center;
-        text-shadow: 0 2px 0 #000;
-      }
-
-      @media (max-width: 420px) {
-        .pixelprix-song-dock {
-          top: calc(58px + env(safe-area-inset-top));
-          right: 8px;
-          width: min(226px, calc(100vw - 16px));
-        }
-
-        .pixelprix-song-toggle {
-          font-size: 0.86rem;
-        }
-
-        .pixelprix-song-button,
-        .pixelprix-song-stop {
-          font-size: 0.86rem;
-        }
-      }
-    `;
-
-    document.head.appendChild(style);
-  }
-
-  function buildDock() {
-    if (byId("pixelprix-song-dock")) {
-      dom.dock = byId("pixelprix-song-dock");
-      dom.toggle = byId("pixelprix-song-toggle");
-      dom.tray = byId("pixelprix-song-tray");
-      dom.status = byId("pixelprix-song-status");
-      return;
-    }
-
-    const dock = document.createElement("section");
-    dock.id = "pixelprix-song-dock";
-    dock.className = "pixelprix-song-dock";
-    dock.innerHTML = `
-      <button class="pixelprix-song-toggle" id="pixelprix-song-toggle" type="button">
-        🎵 Songs
-      </button>
-
-      <div class="pixelprix-song-tray" id="pixelprix-song-tray">
-        <button class="pixelprix-song-button" type="button" data-pixelprix-song="funBuddy">
-          🎵 Fun Buddy
-        </button>
-
-        <button class="pixelprix-song-button pickup" type="button" data-pixelprix-song="pickUp">
-          🛏️ Pick It Up
-        </button>
-
-        <button class="pixelprix-song-button goodnight" type="button" data-pixelprix-song="goodNight">
-          🌙 GoodNight
-        </button>
-
-        <button class="pixelprix-song-stop" id="pixelprix-song-stop" type="button">
-          Stop Song
-        </button>
-
-        <div class="pixelprix-song-status" id="pixelprix-song-status">
-          Songs add fun. Touch still works.
-        </div>
-      </div>
-    `;
-
-    document.body.appendChild(dock);
-
-    dom.dock = dock;
-    dom.toggle = byId("pixelprix-song-toggle");
-    dom.tray = byId("pixelprix-song-tray");
-    dom.status = byId("pixelprix-song-status");
-  }
-
-  function setStatus(text) {
-    if (dom.status) {
-      dom.status.textContent = text;
-    }
-  }
-
-  function updateDock() {
-    if (!dom.dock || !dom.toggle) {
-      return;
-    }
-
-    dom.dock.classList.toggle("open", state.trayOpen);
-    dom.toggle.classList.toggle("off", !state.enabled || !state.playing);
-
-    if (!state.enabled) {
-      dom.toggle.textContent = "▶ Songs off";
-      return;
-    }
-
-    if (state.playing && state.currentKey && SONGS[state.currentKey]) {
-      dom.toggle.textContent = "🎵 " + SONGS[state.currentKey].shortLabel;
-      return;
-    }
-
-    dom.toggle.textContent = "🎵 Songs";
-  }
-
-  function setEnabled(value) {
-    state.enabled = Boolean(value);
-    savePreference();
-
-    if (!state.enabled) {
-      stopSong("Songs off. Touch still works.");
-    }
-
-    updateDock();
-  }
-
-  function stopSong(statusText) {
-    audio.pause();
-    audio.currentTime = 0;
+  function stopSong() {
+    try {
+      audio.pause();
+      audio.currentTime = 0;
+    } catch (error) {}
 
     state.playing = false;
     state.currentKey = "";
-
-    setStatus(statusText || "Song stopped.");
-    updateDock();
   }
 
-  function playSong(key, reason) {
+  function chooseSongForScreen() {
+    const text = screenText();
+
+    if (
+      text.indexOf("adventure done") !== -1 ||
+      text.indexOf("play again") !== -1 ||
+      text.indexOf("great job") !== -1
+    ) {
+      return "goodNight";
+    }
+
+    if (
+      text.indexOf("find it") !== -1 ||
+      text.indexOf("find treasure") !== -1 ||
+      text.indexOf("found it") !== -1 ||
+      text.indexOf("clean-up hunt") !== -1 ||
+      text.indexOf("clean up") !== -1 ||
+      text.indexOf("move it home") !== -1 ||
+      text.indexOf("play clean up") !== -1
+    ) {
+      return "pickUp";
+    }
+
+    return "funBuddy";
+  }
+
+  function playSong(key) {
     const song = SONGS[key];
 
-    if (!song) {
+    if (!song || !state.enabled) {
       return;
     }
 
-    state.enabled = true;
-    savePreference();
+    state.wantedKey = key;
+
+    if (!state.unlocked) {
+      return;
+    }
 
     if (state.currentKey !== key) {
-      audio.pause();
-      audio.currentTime = 0;
-      audio.src = song.url;
+      try {
+        audio.pause();
+        audio.currentTime = 0;
+        audio.src = song.url;
+      } catch (error) {}
+
       state.currentKey = key;
     }
 
@@ -337,113 +155,76 @@
     if (attempt && typeof attempt.then === "function") {
       attempt.then(function () {
         state.playing = true;
-        setStatus((reason ? reason + ": " : "") + song.label);
-        updateDock();
       }).catch(function () {
         state.playing = false;
-        setStatus("Tap the song button again to play.");
-        updateDock();
+        scheduleRetry();
       });
     } else {
       state.playing = true;
-      setStatus(song.label);
-      updateDock();
     }
   }
 
-  function toggleTray() {
-    state.trayOpen = !state.trayOpen;
-    updateDock();
+  function scheduleRetry() {
+    if (state.retryTimer) {
+      return;
+    }
+
+    state.retryTimer = window.setTimeout(function () {
+      state.retryTimer = null;
+
+      if (state.enabled && state.unlocked && state.wantedKey) {
+        playSong(state.wantedKey);
+      }
+    }, 350);
   }
 
-  function autoSongForScreen() {
+  function unlockAudio() {
+    state.unlocked = true;
+
     if (!state.enabled) {
       return;
     }
 
-    const text = screenText().toLowerCase();
-
-    if (text.indexOf("adventure done") !== -1) {
-      autoPlayOnce("goodNight", "GoodNight");
-      return;
-    }
-
-    if (
-      text.indexOf("find treasure") !== -1 ||
-      text.indexOf("found it") !== -1 ||
-      text.indexOf("clean-up hunt") !== -1 ||
-      text.indexOf("move it home") !== -1
-    ) {
-      autoPlayOnce("pickUp", "Pick it up");
-      return;
-    }
-
-    if (
-      text.indexOf("open camera") !== -1 ||
-      text.indexOf("game board") !== -1 ||
-      text.indexOf("tiny tidy") !== -1 ||
-      text.indexOf("treasure") !== -1
-    ) {
-      autoPlayOnce("funBuddy", "Fun Buddy");
-    }
+    playSong(state.wantedKey || chooseSongForScreen());
   }
 
-  function autoPlayOnce(key, reason) {
+  function syncSongToGame() {
     if (!state.enabled) {
+      stopSong();
       return;
     }
 
-    if (state.lastAutoKey === key && state.playing) {
-      return;
-    }
+    const key = chooseSongForScreen();
+    state.wantedKey = key;
 
-    state.lastAutoKey = key;
-    playSong(key, reason);
-  }
-
-  function hookDock() {
-    if (dom.toggle) {
-      dom.toggle.addEventListener("click", function () {
-        toggleTray();
-      });
-    }
-
-    document.querySelectorAll("[data-pixelprix-song]").forEach(function (button) {
-      button.addEventListener("click", function () {
-        const key = button.getAttribute("data-pixelprix-song");
-        playSong(key, "Manual");
-      });
-    });
-
-    const stop = byId("pixelprix-song-stop");
-
-    if (stop) {
-      stop.addEventListener("click", function () {
-        setEnabled(false);
-      });
+    if (state.unlocked) {
+      playSong(key);
     }
   }
 
-  function hookGameButtons() {
+  function hookOneActionRoad() {
     if (dom.mainButton) {
       dom.mainButton.addEventListener("click", function () {
-        if (state.enabled && !state.playing && !state.currentKey) {
-          playSong("funBuddy", "Fun Buddy");
-        }
-
-        window.setTimeout(autoSongForScreen, 260);
+        unlockAudio();
+        window.setTimeout(syncSongToGame, 160);
       });
     }
 
-    if (dom.secondButton) {
-      dom.secondButton.addEventListener("click", function () {
-        const text = readText(dom.secondButton).toLowerCase();
+    document.addEventListener(
+      "pointerdown",
+      function () {
+        unlockAudio();
+      },
+      { once: true, passive: true }
+    );
 
-        if (text.indexOf("clear") !== -1 || text.indexOf("home") !== -1) {
-          stopSong("Song stopped.");
-        }
-      });
-    }
+    document.addEventListener(
+      "touchstart",
+      function () {
+        unlockAudio();
+      },
+      { once: true, passive: true }
+    );
   }
 
   function hookScreenWatchers() {
@@ -455,7 +236,7 @@
       }
 
       const observer = new MutationObserver(function () {
-        window.setTimeout(autoSongForScreen, 160);
+        window.setTimeout(syncSongToGame, 160);
       });
 
       observer.observe(target, {
@@ -469,19 +250,15 @@
   function hookAudio() {
     audio.addEventListener("play", function () {
       state.playing = true;
-      updateDock();
     });
 
     audio.addEventListener("pause", function () {
       state.playing = false;
-      updateDock();
     });
 
     audio.addEventListener("ended", function () {
       state.playing = false;
       state.currentKey = "";
-      setStatus("Song finished.");
-      updateDock();
     });
   }
 
@@ -499,29 +276,61 @@
     state.booted = true;
 
     loadPreference();
-    injectStyle();
-    buildDock();
     hookAudio();
-    hookDock();
-    hookGameButtons();
+    hookOneActionRoad();
     hookScreenWatchers();
-    updateDock();
+
+    state.wantedKey = chooseSongForScreen();
+    syncSongToGame();
   }
 
   window.PixelPrixSongs = {
-    play: playSong,
-    stop: stopSong,
+    play: function (key) {
+      if (!SONGS[key]) {
+        return false;
+      }
+
+      state.enabled = true;
+      state.unlocked = true;
+      savePreference();
+      playSong(key);
+      return true;
+    },
+
+    stop: function () {
+      state.enabled = false;
+      savePreference();
+      stopSong();
+    },
+
     off: function () {
-      setEnabled(false);
+      state.enabled = false;
+      savePreference();
+      stopSong();
     },
+
     on: function () {
-      setEnabled(true);
-      playSong("funBuddy", "Fun Buddy");
+      state.enabled = true;
+      savePreference();
+      unlockAudio();
     },
+
+    current: function () {
+      return {
+        enabled: state.enabled,
+        unlocked: state.unlocked,
+        currentKey: state.currentKey,
+        wantedKey: state.wantedKey,
+        playing: state.playing
+      };
+    },
+
     songs: function () {
       return Object.assign({}, SONGS);
     }
   };
+
+  window.addEventListener("pagehide", stopSong);
 
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", boot);
