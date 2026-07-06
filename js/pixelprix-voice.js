@@ -1,8 +1,10 @@
 // js/pixelprix-voice.js
 // PixelPrix Core — Voice Layer
 // Owns: optional mic fun, family voice labels, replaying labels during cleanup.
-// Does not own: camera permission, camera capture, HTML layout, CyberCade, NET, uploads, sync, accounts, or provider transport.
+// Does not own: camera permission, camera capture, HTML layout, CyberCade, NET, uploads, sync, accounts, analytics, or provider transport.
 // Rule: Mic adds fun. Mic does not block play. Touch always works.
+// One-action rule: No extra mic buttons. The big game button moves the game.
+// Voice rule: In voice-guide mode, the “What is it?” prompt card is the listening surface.
 
 (function () {
   "use strict";
@@ -20,7 +22,8 @@
     recorder: null,
     stream: null,
     chunks: [],
-    stopTimer: null
+    stopTimer: null,
+    listening: false
   };
 
   const dom = {
@@ -28,8 +31,7 @@
     prompt: null,
     helper: null,
     thumbs: null,
-    mainButton: null,
-    secondButton: null
+    mainButton: null
   };
 
   function byId(id) {
@@ -42,7 +44,10 @@
     dom.helper = byId("helper");
     dom.thumbs = byId("thumbs");
     dom.mainButton = byId("main-button");
-    dom.secondButton = byId("second-button");
+  }
+
+  function readText(node) {
+    return node && node.textContent ? node.textContent.trim() : "";
   }
 
   function readGuide() {
@@ -82,18 +87,13 @@
     state.lastTreasureCount = countTreasurePictures();
     state.lastPlayedCleanupNumber = 0;
     removeVoiceCard();
-    sayStatus("Voice labels cleared on this device.");
   }
 
-  function sayStatus(text) {
+  function setStatus(text) {
     const status = byId("pixelprix-voice-status");
 
     if (status) {
       status.textContent = text;
-    }
-
-    if (dom.helper && text) {
-      dom.helper.textContent = text;
     }
   }
 
@@ -107,8 +107,8 @@
 
   function cleanupNumberFromPrompt() {
     const text = [
-      dom.prompt ? dom.prompt.textContent : "",
-      dom.helper ? dom.helper.textContent : ""
+      readText(dom.prompt),
+      readText(dom.helper)
     ].join(" ");
 
     const match = text.match(/treasure\s+(\d+)/i);
@@ -129,84 +129,46 @@
     style.id = "pixelprix-voice-style";
     style.textContent = `
       .pixelprix-voice-card {
-        margin-top: 12px;
-        padding: 14px;
-        border-radius: 24px;
-        background: rgba(5, 6, 10, 0.82);
+        margin-top: 9px;
+        padding: 12px;
+        border-radius: 20px;
+        background: rgba(5, 6, 10, 0.84);
         border: 2px solid rgba(255, 255, 255, 0.24);
-        box-shadow: 0 14px 34px rgba(0, 0, 0, 0.55);
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.5);
         color: #fff7df;
         text-align: center;
+        cursor: pointer;
+        touch-action: manipulation;
+        user-select: none;
+      }
+
+      .pixelprix-voice-card.listening {
+        background: rgba(255, 139, 209, 0.22);
+        border-color: rgba(255, 211, 77, 0.72);
+        transform: translateY(3px);
       }
 
       .pixelprix-voice-card h2 {
-        margin: 0 0 8px;
+        margin: 0 0 7px;
         color: #ffd34d;
-        font-size: clamp(1.45rem, 6vw, 2.6rem);
+        font-size: clamp(1.35rem, 6vw, 2.4rem);
         line-height: 1;
         text-shadow: 0 3px 0 #000;
       }
 
       .pixelprix-voice-card p {
-        margin: 0 0 10px;
+        margin: 0 0 7px;
         color: #fff7df;
-        font-size: clamp(1rem, 4vw, 1.25rem);
+        font-size: clamp(0.9rem, 3.5vw, 1.1rem);
+        line-height: 1.18;
         font-weight: 900;
         text-shadow: 0 2px 0 #000;
       }
 
-      .pixelprix-talk-button {
-        width: 100%;
-        min-height: 78px;
-        border: 0;
-        border-radius: 28px;
-        padding: 16px;
-        color: #050505;
-        background: linear-gradient(135deg, #6dff91, #dbff73);
-        font: inherit;
-        font-size: clamp(1.35rem, 6vw, 2.6rem);
-        font-weight: 900;
-        box-shadow: 0 8px 0 rgba(0, 0, 0, 0.55);
-        touch-action: none;
-        cursor: pointer;
-      }
-
-      .pixelprix-talk-button.recording {
-        background: linear-gradient(135deg, #ff8bd1, #ffd34d);
-        transform: translateY(4px);
-        box-shadow: 0 4px 0 rgba(0, 0, 0, 0.55);
-      }
-
-      .pixelprix-voice-actions {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 8px;
-        margin-top: 10px;
-      }
-
-      .pixelprix-voice-actions button {
-        min-height: 54px;
-        border: 0;
-        border-radius: 999px;
-        color: #050505;
-        background: #ffd34d;
-        font: inherit;
-        font-weight: 900;
-        cursor: pointer;
-        box-shadow: 0 5px 0 rgba(0, 0, 0, 0.55);
-      }
-
-      .pixelprix-voice-actions button:active,
-      .pixelprix-talk-button:active {
-        transform: translateY(4px);
-        box-shadow: 0 3px 0 rgba(0, 0, 0, 0.55);
-      }
-
       .pixelprix-voice-status {
-        min-height: 22px;
-        margin-top: 8px;
+        min-height: 18px;
         color: rgba(255, 247, 223, 0.9);
-        font-size: 0.95rem;
+        font-size: clamp(0.74rem, 2.85vw, 0.9rem);
         font-weight: 900;
         text-shadow: 0 2px 0 #000;
       }
@@ -242,55 +204,52 @@
     const card = document.createElement("section");
     card.id = "pixelprix-voice-card";
     card.className = "pixelprix-voice-card";
+    card.setAttribute("role", "button");
+    card.setAttribute("tabindex", "0");
     card.innerHTML = `
-      <h2>What do you call treasure ${treasureNumber}?</h2>
-      <p>Hold TALK and say the word your family uses.</p>
-
-      <button class="pixelprix-talk-button" id="pixelprix-talk-button" type="button">
-        🎤 HOLD TALK
-      </button>
-
-      <div class="pixelprix-voice-actions">
-        <button id="pixelprix-play-label" type="button">PLAY WORD</button>
-        <button id="pixelprix-next-label" type="button">NEXT</button>
-      </div>
-
+      <h2 id="pixelprix-voice-title">What is it?</h2>
+      <p>Tap this card and say the word your family uses.</p>
       <div class="pixelprix-voice-status" id="pixelprix-voice-status">
-        Voice stays on this device.
+        Voice stays on this device. The big button keeps the game moving.
       </div>
     `;
 
     dom.panel.appendChild(card);
 
-    const talk = byId("pixelprix-talk-button");
-    const play = byId("pixelprix-play-label");
-    const next = byId("pixelprix-next-label");
+    card.addEventListener("click", function () {
+      if (state.listening) {
+        stopRecording();
+        return;
+      }
 
-    talk.addEventListener("pointerdown", function (event) {
-      event.preventDefault();
-      startRecording(treasureNumber, talk);
+      startRecording(treasureNumber);
     });
 
-    talk.addEventListener("pointerup", function (event) {
-      event.preventDefault();
-      stopRecording();
+    card.addEventListener("keydown", function (event) {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+
+        if (state.listening) {
+          stopRecording();
+          return;
+        }
+
+        startRecording(treasureNumber);
+      }
     });
+  }
 
-    talk.addEventListener("pointercancel", function () {
-      stopRecording();
-    });
+  function setListeningUi(isListening) {
+    const card = byId("pixelprix-voice-card");
+    const title = byId("pixelprix-voice-title");
 
-    document.addEventListener("pointerup", stopRecording, { once: true });
+    if (card) {
+      card.classList.toggle("listening", isListening);
+    }
 
-    play.addEventListener("click", function () {
-      playLabel(treasureNumber);
-    });
-
-    next.addEventListener("click", function () {
-      removeVoiceCard();
-    });
-
-    sayStatus("Press and hold TALK. Say the treasure word.");
+    if (title) {
+      title.textContent = isListening ? "Listening 🎶" : "What is it?";
+    }
   }
 
   function chooseMimeType() {
@@ -314,13 +273,21 @@
     return "";
   }
 
-  async function startRecording(treasureNumber, button) {
-    if (state.recorder) {
+  async function startRecording(treasureNumber) {
+    if (state.recorder || state.listening) {
+      return;
+    }
+
+    if (!isVoiceGuide()) {
+      return;
+    }
+
+    if (!treasureNumber) {
       return;
     }
 
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !window.MediaRecorder) {
-      sayStatus("Mic is not available here. Touch still works.");
+      setStatus("Mic is not available here. Touch still works.");
       return;
     }
 
@@ -337,6 +304,7 @@
       state.chunks = [];
       state.activeTreasureNumber = treasureNumber;
       state.recorder = new MediaRecorder(stream, options);
+      state.listening = true;
 
       state.recorder.addEventListener("dataavailable", function (event) {
         if (event.data && event.data.size > 0) {
@@ -348,32 +316,29 @@
 
       state.recorder.start();
 
-      button.classList.add("recording");
-      button.textContent = "🎤 TALKING...";
-      sayStatus("Listening. Let go when done.");
+      setListeningUi(true);
+      setStatus("Listening. Say the word.");
 
       state.stopTimer = window.setTimeout(function () {
         stopRecording();
       }, MAX_RECORD_MS);
     } catch (error) {
-      sayStatus("Mic permission needed. Touch still works.");
+      state.listening = false;
+      setListeningUi(false);
+      setStatus("Mic permission needed. Touch still works.");
     }
   }
 
   function stopRecording() {
-    const talk = byId("pixelprix-talk-button");
-
     if (state.stopTimer) {
       window.clearTimeout(state.stopTimer);
       state.stopTimer = null;
     }
 
-    if (talk) {
-      talk.classList.remove("recording");
-      talk.textContent = "🎤 HOLD TALK";
-    }
+    setListeningUi(false);
 
     if (!state.recorder) {
+      state.listening = false;
       return;
     }
 
@@ -396,6 +361,7 @@
     state.stream = null;
     state.recorder = null;
     state.chunks = [];
+    state.listening = false;
   }
 
   function finishRecording() {
@@ -407,7 +373,7 @@
     cleanupStream();
 
     if (!blob.size) {
-      sayStatus("No voice caught. Hold TALK and try again.");
+      setStatus("No voice caught. Tap What is it? and try again.");
       return;
     }
 
@@ -417,12 +383,10 @@
       state.labels[String(treasureNumber)] = reader.result;
 
       if (saveLabels()) {
-        sayStatus("Saved. This treasure has your voice.");
+        setStatus("Saved. This treasure has your voice.");
       } else {
-        sayStatus("Voice recorded, but this device storage is full.");
+        setStatus("Voice recorded, but this device storage is full.");
       }
-
-      playLabel(treasureNumber);
     });
 
     reader.readAsDataURL(blob);
@@ -432,19 +396,14 @@
     const src = state.labels[String(treasureNumber)];
 
     if (!src) {
-      sayStatus("No voice saved for this treasure yet.");
       return;
     }
 
     try {
       const audio = new Audio(src);
 
-      audio.play().catch(function () {
-        sayStatus("Tap PLAY WORD again to hear it.");
-      });
-    } catch (error) {
-      sayStatus("Voice could not play here.");
-    }
+      audio.play().catch(function () {});
+    } catch (error) {}
   }
 
   function watchTreasurePictures() {
@@ -482,29 +441,23 @@
     }, 350);
   }
 
-  function hookButtons() {
-    if (dom.mainButton) {
-      dom.mainButton.addEventListener("click", function () {
-        window.setTimeout(function () {
-          watchTreasurePictures();
-          watchCleanupPrompt();
-        }, 180);
-      });
+  function syncAfterGameMove() {
+    window.setTimeout(function () {
+      watchTreasurePictures();
+      watchCleanupPrompt();
+    }, 180);
+  }
+
+  function hookMainButton() {
+    if (!dom.mainButton) {
+      return;
     }
 
-    if (dom.secondButton) {
-      dom.secondButton.addEventListener("click", function () {
-        const label = dom.secondButton.textContent || "";
-
-        if (/clear/i.test(label)) {
-          clearLabels();
-        }
-      });
-    }
+    dom.mainButton.addEventListener("click", syncAfterGameMove);
   }
 
   function hookObservers() {
-    if (dom.thumbs) {
+    if (dom.thumbs && window.MutationObserver) {
       const thumbObserver = new MutationObserver(function () {
         watchTreasurePictures();
       });
@@ -515,29 +468,21 @@
       });
     }
 
-    if (dom.prompt) {
-      const promptObserver = new MutationObserver(function () {
+    [dom.prompt, dom.helper].forEach(function (target) {
+      if (!target || !window.MutationObserver) {
+        return;
+      }
+
+      const observer = new MutationObserver(function () {
         watchCleanupPrompt();
       });
 
-      promptObserver.observe(dom.prompt, {
+      observer.observe(target, {
         childList: true,
         characterData: true,
         subtree: true
       });
-    }
-
-    if (dom.helper) {
-      const helperObserver = new MutationObserver(function () {
-        watchCleanupPrompt();
-      });
-
-      helperObserver.observe(dom.helper, {
-        childList: true,
-        characterData: true,
-        subtree: true
-      });
-    }
+    });
   }
 
   function boot() {
@@ -553,7 +498,7 @@
 
     state.lastTreasureCount = countTreasurePictures();
 
-    hookButtons();
+    hookMainButton();
     hookObservers();
   }
 
