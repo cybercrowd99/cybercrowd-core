@@ -3,6 +3,7 @@
 // Owns: "What is it?", typed treasure names, phonics / sounds-like labels, cleanup name display.
 // Does not own: HTML layout, camera permission, camera capture, mic recording, song layer, NET, uploads, sync, accounts, or provider transport.
 // Rule: Typing adds clarity. Phonics fixes pronunciation. Touch still works. Voice remains optional.
+// One-action rule: This layer adds no extra action buttons. The big game button remains the only road.
 
 (function () {
   "use strict";
@@ -86,7 +87,6 @@
     state.activeTreasureNumber = 0;
     removeDescribeCard();
     removeCleanupCard();
-    setStatus("Words cleared on this device.");
   }
 
   function countTreasurePictures() {
@@ -124,16 +124,6 @@
     };
   }
 
-  function displayNameFor(treasureNumber) {
-    const label = labelFor(treasureNumber);
-
-    if (label.name) {
-      return label.name;
-    }
-
-    return "treasure " + treasureNumber;
-  }
-
   function speechNameFor(treasureNumber) {
     const label = labelFor(treasureNumber);
 
@@ -154,10 +144,6 @@
     if (status) {
       status.textContent = text;
     }
-
-    if (dom.helper && text) {
-      dom.helper.textContent = text;
-    }
   }
 
   function injectStyle() {
@@ -170,9 +156,9 @@
     style.textContent = `
       .pixelprix-describe-card,
       .pixelprix-cleanup-name-card {
-        margin-top: 12px;
-        padding: 14px;
-        border-radius: 24px;
+        margin-top: 10px;
+        padding: 11px;
+        border-radius: 20px;
         background: rgba(5, 6, 10, 0.84);
         border: 2px solid rgba(255, 255, 255, 0.24);
         box-shadow: 0 14px 34px rgba(0, 0, 0, 0.55);
@@ -182,47 +168,47 @@
 
       .pixelprix-describe-card h2,
       .pixelprix-cleanup-name-card h2 {
-        margin: 0 0 8px;
+        margin: 0 0 6px;
         color: #ffd34d;
-        font-size: clamp(1.45rem, 6vw, 2.6rem);
+        font-size: clamp(1.25rem, 5.4vw, 2.3rem);
         line-height: 1;
         text-shadow: 0 3px 0 #000;
       }
 
       .pixelprix-describe-card p,
       .pixelprix-cleanup-name-card p {
-        margin: 0 0 10px;
+        margin: 0 0 8px;
         color: #fff7df;
-        font-size: clamp(1rem, 4vw, 1.25rem);
+        font-size: clamp(0.9rem, 3.6vw, 1.1rem);
         font-weight: 900;
         text-shadow: 0 2px 0 #000;
       }
 
       .pixelprix-describe-fields {
         display: grid;
-        gap: 8px;
+        gap: 7px;
       }
 
       .pixelprix-describe-label {
         display: grid;
-        gap: 5px;
+        gap: 4px;
         color: #fff7df;
         text-align: left;
-        font-size: 0.95rem;
+        font-size: clamp(0.78rem, 3vw, 0.94rem);
         font-weight: 900;
         text-shadow: 0 2px 0 #000;
       }
 
       .pixelprix-describe-input {
         width: 100%;
-        min-height: 54px;
+        min-height: 46px;
         border: 2px solid rgba(255, 255, 255, 0.25);
-        border-radius: 18px;
-        padding: 10px 12px;
+        border-radius: 16px;
+        padding: 9px 11px;
         color: #050505;
         background: #fff7df;
         font: inherit;
-        font-size: 1.05rem;
+        font-size: clamp(0.95rem, 4vw, 1.05rem);
         font-weight: 900;
         outline: none;
       }
@@ -232,44 +218,11 @@
         box-shadow: 0 0 0 4px rgba(109, 255, 145, 0.18);
       }
 
-      .pixelprix-describe-actions {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 8px;
-        margin-top: 10px;
-      }
-
-      .pixelprix-describe-actions button {
-        min-height: 56px;
-        border: 0;
-        border-radius: 999px;
-        color: #050505;
-        background: #ffd34d;
-        font: inherit;
-        font-weight: 900;
-        cursor: pointer;
-        box-shadow: 0 5px 0 rgba(0, 0, 0, 0.55);
-        touch-action: manipulation;
-      }
-
-      .pixelprix-describe-actions button.save {
-        background: #6dff91;
-      }
-
-      .pixelprix-describe-actions button.say {
-        background: #7bd4ff;
-      }
-
-      .pixelprix-describe-actions button:active {
-        transform: translateY(4px);
-        box-shadow: 0 2px 0 rgba(0, 0, 0, 0.55);
-      }
-
       .pixelprix-describe-status {
-        min-height: 22px;
-        margin-top: 8px;
+        min-height: 18px;
+        margin-top: 7px;
         color: rgba(255, 247, 223, 0.9);
-        font-size: 0.95rem;
+        font-size: clamp(0.72rem, 2.8vw, 0.88rem);
         font-weight: 900;
         text-shadow: 0 2px 0 #000;
       }
@@ -277,29 +230,23 @@
       .pixelprix-word-pill {
         display: inline-grid;
         place-items: center;
-        min-height: 50px;
-        margin: 5px 0;
-        padding: 8px 18px;
+        min-height: 44px;
+        margin: 4px 0;
+        padding: 7px 16px;
         border-radius: 999px;
         color: #050505;
         background: #6dff91;
-        font-size: clamp(1.35rem, 7vw, 3rem);
+        font-size: clamp(1.15rem, 6vw, 2.5rem);
         font-weight: 900;
         text-shadow: none;
-        box-shadow: 0 6px 0 rgba(0, 0, 0, 0.55);
+        box-shadow: 0 5px 0 rgba(0, 0, 0, 0.55);
       }
 
       .pixelprix-sounds-like {
         color: rgba(255, 247, 223, 0.92);
-        font-size: clamp(0.95rem, 4vw, 1.16rem);
+        font-size: clamp(0.82rem, 3.4vw, 1rem);
         font-weight: 900;
         text-shadow: 0 2px 0 #000;
-      }
-
-      @media (max-width: 420px) {
-        .pixelprix-describe-actions {
-          grid-template-columns: 1fr;
-        }
       }
     `;
 
@@ -334,8 +281,8 @@
     state.activeTreasureNumber = treasureNumber;
 
     const saved = labelFor(treasureNumber);
-    const computerCopy = "Type the answer for the computer guide.";
-    const voiceCopy = "Voice can still work. Type a word too if you want the screen to show it.";
+    const computerCopy = "Type the word. The big game button keeps moving.";
+    const voiceCopy = "Voice can still work. Type a word too if you want.";
 
     const card = document.createElement("section");
     card.id = "pixelprix-describe-card";
@@ -353,34 +300,27 @@
             type="text"
             inputmode="text"
             autocomplete="off"
-            placeholder="t-shirt"
+            placeholder="shirt"
             value=""
           />
         </label>
 
         <label class="pixelprix-describe-label" for="pixelprix-item-phonics">
-          How should PixelPrix say it? / sounds like
+          Sounds like
           <input
             class="pixelprix-describe-input"
             id="pixelprix-item-phonics"
             type="text"
             inputmode="text"
             autocomplete="off"
-            placeholder="tee shirt / shurt / blankie"
+            placeholder="shurt / tee shirt / blankie"
             value=""
           />
         </label>
       </div>
 
-      <div class="pixelprix-describe-actions">
-        <button class="save" id="pixelprix-save-word" type="button">SAVE WORD</button>
-        <button class="say" id="pixelprix-say-word" type="button">SAY IT</button>
-        <button id="pixelprix-skip-word" type="button">NEXT</button>
-        <button id="pixelprix-clear-word" type="button">CLEAR WORD</button>
-      </div>
-
       <div class="pixelprix-describe-status" id="pixelprix-describe-status">
-        Phonics are allowed. Spell it how it sounds.
+        Saved on this device as you type.
       </div>
     `;
 
@@ -388,34 +328,16 @@
 
     const nameInput = byId("pixelprix-item-name");
     const phonicsInput = byId("pixelprix-item-phonics");
-    const save = byId("pixelprix-save-word");
-    const say = byId("pixelprix-say-word");
-    const next = byId("pixelprix-skip-word");
-    const clear = byId("pixelprix-clear-word");
 
     nameInput.value = saved.name || "";
     phonicsInput.value = saved.phonics || "";
 
-    save.addEventListener("click", function () {
+    nameInput.addEventListener("input", function () {
       saveWord(treasureNumber);
     });
 
-    say.addEventListener("click", function () {
+    phonicsInput.addEventListener("input", function () {
       saveWord(treasureNumber);
-      sayTreasure(treasureNumber, true);
-    });
-
-    next.addEventListener("click", function () {
-      saveWord(treasureNumber);
-      removeDescribeCard();
-    });
-
-    clear.addEventListener("click", function () {
-      delete state.labels[String(treasureNumber)];
-      saveLabels();
-      nameInput.value = "";
-      phonicsInput.value = "";
-      setStatus("Word cleared for this treasure.");
     });
 
     nameInput.addEventListener("keydown", function (event) {
@@ -428,14 +350,9 @@
     phonicsInput.addEventListener("keydown", function (event) {
       if (event.key === "Enter") {
         event.preventDefault();
-        saveWord(treasureNumber);
-        removeDescribeCard();
+        phonicsInput.blur();
       }
     });
-
-    window.setTimeout(function () {
-      nameInput.focus();
-    }, 120);
   }
 
   function saveWord(treasureNumber) {
@@ -450,7 +367,9 @@
     const phonics = safeTrim(phonicsInput.value);
 
     if (!name && !phonics) {
-      setStatus("No word saved yet. Touch still works.");
+      delete state.labels[String(treasureNumber)];
+      saveLabels();
+      setStatus("No word yet. Touch still works.");
       return false;
     }
 
@@ -463,7 +382,7 @@
     if (saveLabels()) {
       setStatus("Saved: " + (name || phonics));
     } else {
-      setStatus("Word saved for this round. Device storage was full.");
+      setStatus("Saved for this round. Device storage was full.");
     }
 
     return true;
