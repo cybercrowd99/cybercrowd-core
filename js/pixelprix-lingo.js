@@ -3,15 +3,18 @@
 // Owns: Biff question, Dewey bucket hints, translated cleanup words, local-only object pings.
 // Does not own: HTML layout, camera permission, camera capture, mic recording, song layer, NET, uploads, sync, accounts, analytics, or provider transport.
 // Rule: Words can travel. Kids do not. Object pings stay local unless a later NET lane is explicitly built.
-// One-action rule: This layer adds no action buttons. The big game button remains the only road.
+// Lane rule: Computer guide is textual. Voice guide is speech. This file does not demand text fields in voice mode.
+// One-action rule: This layer adds no action buttons. The big game button remains the only movement road.
 
 (function () {
   "use strict";
 
+  const GUIDE_KEY = "pixelprixGuide";
   const LINGO_KEY = "pixelprixLingoLabels.v1";
   const PING_KEY = "pixelprixObjectPings.v1";
 
   const state = {
+    guide: "star",
     labels: {},
     pings: [],
     activeTreasureNumber: 0,
@@ -191,6 +194,24 @@
     return node && node.textContent ? node.textContent.trim() : "";
   }
 
+  function readGuide() {
+    try {
+      state.guide = localStorage.getItem(GUIDE_KEY) || "star";
+    } catch (error) {
+      state.guide = "star";
+    }
+
+    return state.guide;
+  }
+
+  function isVoiceGuide() {
+    return readGuide() === "voice";
+  }
+
+  function isComputerGuide() {
+    return !isVoiceGuide();
+  }
+
   function safeTrim(value) {
     return String(value || "").replace(/\s+/g, " ").trim();
   }
@@ -341,7 +362,8 @@
       label.item_name,
       label.phonics,
       label.dewey_bucket,
-      label.dewey_home
+      label.dewey_home,
+      state.guide
     ].join("|");
 
     if (signature === state.lastPingSignature) {
@@ -361,6 +383,7 @@
       dewey_bucket: label.dewey_bucket || "object",
       dewey_home: label.dewey_home || "home spot",
       translated_words: label.translated_words || {},
+      guide_lane: state.guide,
       local_only: true,
       created_at: new Date().toISOString()
     });
@@ -489,13 +512,18 @@
     }
 
     if (!parts.length) {
-      parts.push('<span class="pixelprix-lingo-pill">Translation waits for word</span>');
+      parts.push('<span class="pixelprix-lingo-pill">Translation waits for typed word</span>');
     }
 
     return parts.join("");
   }
 
   function renderLingoCard(treasureNumber, label) {
+    if (!isComputerGuide()) {
+      removeLingoCard();
+      return;
+    }
+
     const describeCard = getDescribeCard();
 
     if (!describeCard || !dom.panel) {
@@ -512,7 +540,7 @@
       describeCard.insertAdjacentElement("afterend", card);
     }
 
-    const itemName = label.item_name || "waiting for word";
+    const itemName = label.item_name || "waiting for typed word";
     const bucket = label.dewey_bucket || "object";
     const home = label.dewey_home || "home spot";
 
@@ -531,6 +559,11 @@
   }
 
   function saveFromDescribeInputs() {
+    if (!isComputerGuide()) {
+      removeLingoCard();
+      return;
+    }
+
     const describeCard = getDescribeCard();
     const inputs = getDescribeInputs();
 
@@ -588,6 +621,11 @@
   }
 
   function renderCleanupLingoCard(treasureNumber) {
+    if (!isComputerGuide()) {
+      removeCleanupLingoCard();
+      return;
+    }
+
     if (!dom.panel) {
       return;
     }
@@ -624,6 +662,12 @@
   }
 
   function watchCleanup() {
+    if (!isComputerGuide()) {
+      removeCleanupLingoCard();
+      state.lastCleanupNumber = 0;
+      return;
+    }
+
     const number = cleanupNumberFromPrompt();
 
     if (!number) {
@@ -649,6 +693,11 @@
 
   function hookDescribeInputs() {
     document.addEventListener("input", function (event) {
+      if (!isComputerGuide()) {
+        removeLingoCard();
+        return;
+      }
+
       if (
         event.target &&
         (
@@ -705,6 +754,7 @@
     }
 
     injectStyle();
+    readGuide();
     loadStorage();
     hookDescribeInputs();
     hookButton();
