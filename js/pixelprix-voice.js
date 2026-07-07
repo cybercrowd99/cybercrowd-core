@@ -1,10 +1,9 @@
 // js/pixelprix-voice.js
-// PixelPrix Core — Voice Layer
-// Owns: optional mic fun, family voice labels, replaying labels during cleanup.
-// Does not own: camera permission, camera capture, HTML layout, CyberCade, NET, uploads, sync, accounts, analytics, or provider transport.
+// PixelPrix — Voice Layer
+// Owns: optional mic fun, “What is it?” prompt, family voice labels, immediate playback, cleanup replay.
+// Does not own: camera permission, camera capture, HTML layout, CyberCade page, uploads, sync, accounts, analytics, or provider transport.
 // Rule: Mic adds fun. Mic does not block play. Touch always works.
-// One-action rule: No extra mic buttons. The big game button moves the game.
-// Voice rule: In voice-guide mode, the “What is it?” prompt card is the listening surface.
+// Flow: take treasure picture -> ask “What is it?” -> record answer -> play it back -> big game button moves on.
 
 (function () {
   "use strict";
@@ -23,7 +22,9 @@
     stream: null,
     chunks: [],
     stopTimer: null,
-    listening: false
+    listening: false,
+    speaking: false,
+    lastPromptText: ""
   };
 
   const dom = {
@@ -118,6 +119,65 @@
     }
 
     return Number(match[1]) || 0;
+  }
+
+  function speak(text) {
+    if (!isVoiceGuide()) {
+      return;
+    }
+
+    try {
+      if (!("speechSynthesis" in window)) {
+        return;
+      }
+
+      window.speechSynthesis.cancel();
+
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 0.92;
+      utterance.pitch = 1.05;
+
+      state.speaking = true;
+
+      utterance.onend = function () {
+        state.speaking = false;
+      };
+
+      utterance.onerror = function () {
+        state.speaking = false;
+      };
+
+      window.speechSynthesis.speak(utterance);
+    } catch (error) {
+      state.speaking = false;
+    }
+  }
+
+  function beep(frequency, duration) {
+    try {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+
+      if (!AudioContext) {
+        return;
+      }
+
+      const context = new AudioContext();
+      const oscillator = context.createOscillator();
+      const gain = context.createGain();
+
+      oscillator.type = "square";
+      oscillator.frequency.value = frequency || 720;
+      gain.gain.value = 0.04;
+
+      oscillator.connect(gain);
+      gain.connect(context.destination);
+      oscillator.start();
+
+      window.setTimeout(function () {
+        oscillator.stop();
+        context.close();
+      }, duration || 90);
+    } catch (error) {}
   }
 
   function injectStyle() {
@@ -216,6 +276,12 @@
 
     dom.panel.appendChild(card);
 
+    window.setTimeout(function () {
+      beep(640, 80);
+      speak("What is it?");
+      setStatus("Tap the card and say the word.");
+    }, 120);
+
     card.addEventListener("click", function () {
       if (state.listening) {
         stopRecording();
@@ -288,10 +354,13 @@
 
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !window.MediaRecorder) {
       setStatus("Mic is not available here. Touch still works.");
+      speak("Mic is not available here. Touch still works.");
       return;
     }
 
     try {
+      window.speechSynthesis && window.speechSynthesis.cancel();
+
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: true,
         video: false
@@ -318,6 +387,7 @@
 
       setListeningUi(true);
       setStatus("Listening. Say the word.");
+      beep(880, 90);
 
       state.stopTimer = window.setTimeout(function () {
         stopRecording();
@@ -326,6 +396,7 @@
       state.listening = false;
       setListeningUi(false);
       setStatus("Mic permission needed. Touch still works.");
+      speak("Mic permission needed. Touch still works.");
     }
   }
 
@@ -374,6 +445,7 @@
 
     if (!blob.size) {
       setStatus("No voice caught. Tap What is it? and try again.");
+      speak("No voice caught. Try again.");
       return;
     }
 
@@ -383,27 +455,64 @@
       state.labels[String(treasureNumber)] = reader.result;
 
       if (saveLabels()) {
-        setStatus("Saved. This treasure has your voice.");
+        setStatus("Saved. Playing it back.");
+        beep(520, 80);
+
+        window.setTimeout(function () {
+          playLabel(treasureNumber, function () {
+            setStatus("Yes. Voice saved. Use the big button to move on.");
+            speak("Yes. Move on.");
+          });
+        }, 180);
       } else {
         setStatus("Voice recorded, but this device storage is full.");
+        speak("Voice recorded, but this device storage is full.");
       }
     });
 
     reader.readAsDataURL(blob);
   }
 
-  function playLabel(treasureNumber) {
+  function playLabel(treasureNumber, done) {
     const src = state.labels[String(treasureNumber)];
 
     if (!src) {
+      if (typeof done === "function") {
+        done();
+      }
+
       return;
     }
 
     try {
       const audio = new Audio(src);
 
-      audio.play().catch(function () {});
-    } catch (error) {}
+      audio.addEventListener("ended", function () {
+        if (typeof done === "function") {
+          done();
+        }
+      }, { once: true });
+
+      audio.addEventListener("error", function () {
+        if (typeof done === "function") {
+          done();
+        }
+      }, { once: true });
+
+      const attempt = audio.play();
+
+      if (attempt && typeof attempt.catch === "function") {
+        attempt.catch(function () {
+          if (typeof done === "function") {
+            done();
+          }
+        });
+      }
+    } catch (error) {
+      if (typeof done === "function") {
+        done();
+      }
+    }
   }
 
   function watchTreasurePictures() {
@@ -430,14 +539,15 @@
       return;
     }
 
-    if (!state.labels[String(number)]) {
-      return;
-    }
-
     state.lastPlayedCleanupNumber = number;
 
     window.setTimeout(function () {
-      playLabel(number);
+      if (state.labels[String(number)]) {
+        playLabel(number);
+        return;
+      }
+
+      speak("Find treasure " + number + ".");
     }, 350);
   }
 
@@ -485,6 +595,46 @@
     });
   }
 
+  function announceMainPrompt() {
+    if (!isVoiceGuide()) {
+      return;
+    }
+
+    const text = readText(dom.prompt);
+
+    if (!text || text === state.lastPromptText) {
+      return;
+    }
+
+    state.lastPromptText = text;
+
+    if (/point close|treasure picture|find treasure/i.test(text)) {
+      return;
+    }
+
+    window.setTimeout(function () {
+      speak(text);
+    }, 120);
+  }
+
+  function hookPromptVoice() {
+    [dom.prompt, dom.helper].forEach(function (target) {
+      if (!target || !window.MutationObserver) {
+        return;
+      }
+
+      const observer = new MutationObserver(function () {
+        announceMainPrompt();
+      });
+
+      observer.observe(target, {
+        childList: true,
+        characterData: true,
+        subtree: true
+      });
+    });
+  }
+
   function boot() {
     readDom();
 
@@ -500,6 +650,8 @@
 
     hookMainButton();
     hookObservers();
+    hookPromptVoice();
+    announceMainPrompt();
   }
 
   window.PixelPrixVoice = {
@@ -507,8 +659,13 @@
     play: playLabel,
     labels: function () {
       return Object.assign({}, state.labels);
-    }
+    },
+    speak: speak
   };
+
+  window.addEventListener("pagehide", function () {
+    stopRecording();
+  });
 
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", boot);
