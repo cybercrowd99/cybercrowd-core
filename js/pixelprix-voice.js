@@ -24,6 +24,7 @@
     stopTimer: null,
     listening: false,
     speaking: false,
+    audioUnlocked: false,
     lastPromptText: ""
   };
 
@@ -51,9 +52,33 @@
     return node && node.textContent ? node.textContent.trim() : "";
   }
 
+  function normalizeGuide(value) {
+    const guide = String(value || "star").toLowerCase().trim();
+
+    if (guide === "voice") {
+      return "voice";
+    }
+
+    if (guide === "robot") {
+      return "robot";
+    }
+
+    if (
+      guide === "none" ||
+      guide === "silent" ||
+      guide === "no-sound" ||
+      guide === "nosound" ||
+      guide === "off"
+    ) {
+      return "off";
+    }
+
+    return "star";
+  }
+
   function readGuide() {
     try {
-      state.guide = localStorage.getItem(GUIDE_KEY) || "star";
+      state.guide = normalizeGuide(localStorage.getItem(GUIDE_KEY) || "star");
     } catch (error) {
       state.guide = "star";
     }
@@ -63,6 +88,10 @@
 
   function isVoiceGuide() {
     return readGuide() === "voice";
+  }
+
+  function isSoundOff() {
+    return readGuide() === "off";
   }
 
   function loadLabels() {
@@ -84,7 +113,13 @@
 
   function clearLabels() {
     state.labels = {};
-    saveLabels();
+
+    try {
+      localStorage.removeItem(VOICE_KEY);
+    } catch (error) {
+      saveLabels();
+    }
+
     state.lastTreasureCount = countTreasurePictures();
     state.lastPlayedCleanupNumber = 0;
     removeVoiceCard();
@@ -121,8 +156,29 @@
     return Number(match[1]) || 0;
   }
 
+  function unlockAudio() {
+    state.audioUnlocked = true;
+
+    try {
+      if ("speechSynthesis" in window) {
+        window.speechSynthesis.resume();
+      }
+    } catch (error) {}
+  }
+
+  function hookAudioUnlock() {
+    function unlock() {
+      unlockAudio();
+    }
+
+    document.addEventListener("pointerdown", unlock, { once: true });
+    document.addEventListener("touchstart", unlock, { once: true });
+    document.addEventListener("click", unlock, { once: true });
+    document.addEventListener("keydown", unlock, { once: true });
+  }
+
   function speak(text) {
-    if (!isVoiceGuide()) {
+    if (!isVoiceGuide() || isSoundOff()) {
       return;
     }
 
@@ -154,6 +210,10 @@
   }
 
   function beep(frequency, duration) {
+    if (isSoundOff()) {
+      return;
+    }
+
     try {
       const AudioContext = window.AudioContext || window.webkitAudioContext;
 
@@ -164,6 +224,10 @@
       const context = new AudioContext();
       const oscillator = context.createOscillator();
       const gain = context.createGain();
+
+      if (context.state === "suspended" && context.resume) {
+        context.resume();
+      }
 
       oscillator.type = "square";
       oscillator.frequency.value = frequency || 720;
@@ -279,10 +343,12 @@
     window.setTimeout(function () {
       beep(640, 80);
       speak("What is it?");
-      setStatus("Tap the card and say the word.");
+      setStatus("Tap the card and say the word. Tap again to stop early.");
     }, 120);
 
     card.addEventListener("click", function () {
+      unlockAudio();
+
       if (state.listening) {
         stopRecording();
         return;
@@ -294,6 +360,7 @@
     card.addEventListener("keydown", function (event) {
       if (event.key === "Enter" || event.key === " ") {
         event.preventDefault();
+        unlockAudio();
 
         if (state.listening) {
           stopRecording();
@@ -359,7 +426,9 @@
     }
 
     try {
-      window.speechSynthesis && window.speechSynthesis.cancel();
+      if (window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+      }
 
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: true,
@@ -476,7 +545,7 @@
   function playLabel(treasureNumber, done) {
     const src = state.labels[String(treasureNumber)];
 
-    if (!src) {
+    if (!src || isSoundOff()) {
       if (typeof done === "function") {
         done();
       }
@@ -503,6 +572,8 @@
 
       if (attempt && typeof attempt.catch === "function") {
         attempt.catch(function () {
+          setStatus("Tap once more to hear the saved voice.");
+
           if (typeof done === "function") {
             done();
           }
@@ -517,6 +588,12 @@
 
   function watchTreasurePictures() {
     const count = countTreasurePictures();
+
+    if (count < state.lastTreasureCount) {
+      state.lastTreasureCount = count;
+      removeVoiceCard();
+      return;
+    }
 
     if (count > state.lastTreasureCount) {
       state.lastTreasureCount = count;
@@ -608,7 +685,7 @@
 
     state.lastPromptText = text;
 
-    if (/point close|treasure picture|find treasure/i.test(text)) {
+    if (/point close|treasure picture/i.test(text)) {
       return;
     }
 
@@ -645,6 +722,7 @@
     injectStyle();
     readGuide();
     loadLabels();
+    hookAudioUnlock();
 
     state.lastTreasureCount = countTreasurePictures();
 
