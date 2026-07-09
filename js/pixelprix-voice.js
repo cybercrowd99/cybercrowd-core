@@ -1,42 +1,30 @@
 // js/pixelprix-voice.js
-// PixelPrix — Voice Replay Layer
-// Owns: local voice replay for treasure names, “What is this treasure?” recording card, cleanup replay.
-// Does not own: camera permission, camera capture, game phase order, HTML landing page, CyberCade page, uploads, sync, accounts, analytics, provider transport, PING, NET, CORE.
-// Rule: The point is not speech-to-text. The point is the kid hears their own word come back during cleanup.
-// Flow: treasure snap -> robot asks “What is this treasure?” -> record answer -> save replay to treasure number -> cleanup plays it back.
+// PixelPrix — Robot Guide + Human Voice Replay Layer
+// Owns: short robot guide prompts, recording the kid/family treasure voice, saving it to a treasure number, replaying it during cleanup.
+// Does NOT own: camera, room shot, treasure loop, song, robot choice screen, PING, NET, CORE.
+// Rule: Robot guides the game. Human voice names the treasure. Cleanup replays the human voice.
+// No speech-to-text. No robot guessing the object. No robot replacing the kid/family treasure name.
 
 (function () {
   "use strict";
 
   const VOICE_MODE_KEY = "pixelprixRobotVoice";
   const VOICE_KEY = "pixelprixVoiceLabels.v1";
-  const MAX_RECORD_MS = 4500;
+  const MAX_RECORD_MS = 5000;
 
   const state = {
     mode: "female",
     labels: {},
-    activeTreasureNumber: 0,
     recorder: null,
     stream: null,
     chunks: [],
+    activeTreasureNumber: 0,
     stopTimer: null,
-    listening: false,
-    doneCallback: null
+    callbacks: null,
+    isRecording: false
   };
 
-  const dom = {
-    panel: null
-  };
-
-  function byId(id) {
-    return document.getElementById(id);
-  }
-
-  function readDom() {
-    dom.panel = document.querySelector(".panel");
-  }
-
-  function readMode() {
+  function loadMode() {
     try {
       state.mode = localStorage.getItem(VOICE_MODE_KEY) || "female";
     } catch (error) {
@@ -51,7 +39,7 @@
   }
 
   function isSilent() {
-    return readMode() === "silent";
+    return loadMode() === "silent";
   }
 
   function loadLabels() {
@@ -71,266 +59,108 @@
     }
   }
 
-  function clearLabels() {
-    state.labels = {};
-
-    try {
-      localStorage.removeItem(VOICE_KEY);
-    } catch (error) {
-      saveLabels();
-    }
-
-    removeVoiceCard();
-  }
-
-  function setStatus(text) {
-    const status = byId("pixelprix-voice-status");
-
-    if (status) {
-      status.textContent = text;
+  function status(message) {
+    if (state.callbacks && typeof state.callbacks.onStatus === "function") {
+      state.callbacks.onStatus(message);
     }
   }
 
-  function speak(text) {
+  function done() {
+    const callbacks = state.callbacks;
+
+    state.callbacks = null;
+    state.activeTreasureNumber = 0;
+    state.isRecording = false;
+
+    if (callbacks && typeof callbacks.onDone === "function") {
+      callbacks.onDone();
+    }
+  }
+
+  function robotSay(text, after) {
     if (isSilent()) {
+      if (typeof after === "function") {
+        after();
+      }
+
       return;
     }
 
     try {
       if (!("speechSynthesis" in window)) {
+        if (typeof after === "function") {
+          after();
+        }
+
         return;
       }
 
       window.speechSynthesis.cancel();
 
       const utterance = new SpeechSynthesisUtterance(text);
-      utterance.rate = 0.9;
-      utterance.pitch = readMode() === "male" ? 0.82 : 1.14;
+      utterance.rate = 0.92;
+      utterance.pitch = loadMode() === "male" ? 0.82 : 1.12;
+
+      utterance.onend = function () {
+        if (typeof after === "function") {
+          after();
+        }
+      };
+
+      utterance.onerror = function () {
+        if (typeof after === "function") {
+          after();
+        }
+      };
 
       window.speechSynthesis.speak(utterance);
-    } catch (error) {}
-  }
-
-  function beep(frequency, duration) {
-    if (isSilent()) {
-      return;
-    }
-
-    try {
-      const AudioContext = window.AudioContext || window.webkitAudioContext;
-
-      if (!AudioContext) {
-        return;
+    } catch (error) {
+      if (typeof after === "function") {
+        after();
       }
-
-      const context = new AudioContext();
-      const oscillator = context.createOscillator();
-      const gain = context.createGain();
-
-      if (context.state === "suspended" && context.resume) {
-        context.resume();
-      }
-
-      oscillator.type = "square";
-      oscillator.frequency.value = frequency || 720;
-      gain.gain.value = 0.04;
-
-      oscillator.connect(gain);
-      gain.connect(context.destination);
-      oscillator.start();
-
-      window.setTimeout(function () {
-        oscillator.stop();
-        context.close();
-      }, duration || 90);
-    } catch (error) {}
-  }
-
-  function injectStyle() {
-    if (byId("pixelprix-voice-style")) {
-      return;
-    }
-
-    const style = document.createElement("style");
-    style.id = "pixelprix-voice-style";
-    style.textContent = `
-      .pixelprix-voice-card {
-        margin-top: 9px;
-        padding: 12px;
-        border-radius: 20px;
-        background: rgba(5, 6, 10, 0.84);
-        border: 2px solid rgba(255, 255, 255, 0.24);
-        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.5);
-        color: #fff7df;
-        text-align: center;
-        cursor: pointer;
-        touch-action: manipulation;
-        user-select: none;
-      }
-
-      .pixelprix-voice-card.listening {
-        background: rgba(255, 139, 209, 0.22);
-        border-color: rgba(255, 211, 77, 0.72);
-        transform: translateY(3px);
-      }
-
-      .pixelprix-voice-card h2 {
-        margin: 0 0 7px;
-        color: #ffd34d;
-        font-size: clamp(1.35rem, 6vw, 2.4rem);
-        line-height: 1;
-        text-shadow: 0 3px 0 #000;
-      }
-
-      .pixelprix-voice-card p {
-        margin: 0 0 7px;
-        color: #fff7df;
-        font-size: clamp(0.9rem, 3.5vw, 1.1rem);
-        line-height: 1.18;
-        font-weight: 900;
-        text-shadow: 0 2px 0 #000;
-      }
-
-      .pixelprix-voice-status {
-        min-height: 18px;
-        color: rgba(255, 247, 223, 0.9);
-        font-size: clamp(0.74rem, 2.85vw, 0.9rem);
-        font-weight: 900;
-        text-shadow: 0 2px 0 #000;
-      }
-
-      .pixelprix-voice-actions {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 8px;
-        margin-top: 8px;
-      }
-
-      .pixelprix-voice-actions button {
-        min-height: 46px;
-        border-radius: 999px;
-        padding: 8px 10px;
-        color: #050505;
-        background: linear-gradient(135deg, #6dff91, #dbff73);
-        font: inherit;
-        font-size: clamp(0.86rem, 3.4vw, 1rem);
-        font-weight: 900;
-        border: 0;
-        box-shadow: 0 5px 0 rgba(0, 0, 0, 0.62);
-      }
-
-      .pixelprix-voice-actions button.skip {
-        background: #ffd34d;
-      }
-    `;
-
-    document.head.appendChild(style);
-  }
-
-  function removeVoiceCard() {
-    const card = byId("pixelprix-voice-card");
-
-    if (card) {
-      card.remove();
-    }
-
-    stopRecording();
-    state.activeTreasureNumber = 0;
-    state.doneCallback = null;
-  }
-
-  function finishAsk() {
-    const done = state.doneCallback;
-
-    removeVoiceCard();
-
-    if (typeof done === "function") {
-      done();
     }
   }
 
-  function showVoiceCard(treasureNumber, done) {
-    readDom();
+  function guide(key, detail, after) {
+    let text = "";
 
-    if (!dom.panel) {
-      if (typeof done === "function") {
-        done();
-      }
-
-      return;
+    if (key === "welcome") {
+      text = "Welcome to PixelPrix.";
     }
 
-    if (isSilent()) {
-      if (typeof done === "function") {
-        done();
-      }
-
-      return;
+    if (key === "adventure") {
+      text = "Let's have an adventure.";
     }
 
-    removeVoiceCard();
-
-    state.activeTreasureNumber = treasureNumber;
-    state.doneCallback = done;
-
-    const card = document.createElement("section");
-    card.id = "pixelprix-voice-card";
-    card.className = "pixelprix-voice-card";
-    card.setAttribute("role", "group");
-    card.innerHTML = `
-      <h2 id="pixelprix-voice-title">What is this treasure?</h2>
-      <p>Tap record. Say the word. The game will play it back during cleanup.</p>
-      <div class="pixelprix-voice-status" id="pixelprix-voice-status">
-        Voice replay stays on this device.
-      </div>
-      <div class="pixelprix-voice-actions">
-        <button id="pixelprix-record-name" type="button">RECORD</button>
-        <button class="skip" id="pixelprix-skip-name" type="button">SKIP</button>
-      </div>
-    `;
-
-    dom.panel.appendChild(card);
-
-    const record = byId("pixelprix-record-name");
-    const skip = byId("pixelprix-skip-name");
-
-    window.setTimeout(function () {
-      beep(640, 80);
-      speak("Okay. What is this treasure?");
-      setStatus("Tap RECORD and say the word.");
-    }, 120);
-
-    record.addEventListener("click", function () {
-      if (state.listening) {
-        stopRecording();
-        return;
-      }
-
-      startRecording(treasureNumber);
-    });
-
-    skip.addEventListener("click", function () {
-      setStatus("Skipped voice replay.");
-      window.setTimeout(finishAsk, 250);
-    });
-  }
-
-  function setListeningUi(isListening) {
-    const card = byId("pixelprix-voice-card");
-    const title = byId("pixelprix-voice-title");
-    const record = byId("pixelprix-record-name");
-
-    if (card) {
-      card.classList.toggle("listening", isListening);
+    if (key === "room") {
+      text = "Take the room picture first.";
     }
 
-    if (title) {
-      title.textContent = isListening ? "Listening 🎶" : "What is this treasure?";
+    if (key === "treasure") {
+      text = "Look for a treasure.";
     }
 
-    if (record) {
-      record.textContent = isListening ? "STOP" : "RECORD";
+    if (key === "name") {
+      text = "Name this treasure?";
     }
+
+    if (key === "record") {
+      text = "Record your voice.";
+    }
+
+    if (key === "saved") {
+      text = "Voice saved.";
+    }
+
+    if (key === "find") {
+      text = "Go find treasure " + String(detail || 1) + ".";
+    }
+
+    if (!text) {
+      text = String(key || "");
+    }
+
+    robotSay(text, after);
   }
 
   function chooseMimeType() {
@@ -354,20 +184,26 @@
     return "";
   }
 
-  async function startRecording(treasureNumber) {
-    if (state.recorder || state.listening) {
+  async function start(treasureNumber, callbacks) {
+    loadLabels();
+
+    if (state.isRecording) {
+      stop();
       return;
     }
 
-    if (!treasureNumber) {
+    state.callbacks = callbacks || {};
+    state.activeTreasureNumber = Number(treasureNumber) || 0;
+
+    if (!state.activeTreasureNumber) {
+      status("No treasure number found.");
+      window.setTimeout(done, 400);
       return;
     }
 
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !window.MediaRecorder) {
-      setStatus("Mic is not available here. Touch still works.");
-      speak("Mic is not available here. Touch still works.");
-
-      window.setTimeout(finishAsk, 900);
+      status("Mic is not available here. Voice was skipped.");
+      window.setTimeout(done, 900);
       return;
     }
 
@@ -386,9 +222,8 @@
 
       state.stream = stream;
       state.chunks = [];
-      state.activeTreasureNumber = treasureNumber;
       state.recorder = new MediaRecorder(stream, options);
-      state.listening = true;
+      state.isRecording = true;
 
       state.recorder.addEventListener("dataavailable", function (event) {
         if (event.data && event.data.size > 0) {
@@ -400,42 +235,38 @@
 
       state.recorder.start();
 
-      setListeningUi(true);
-      setStatus("Listening. Say the word.");
-      beep(880, 90);
+      status("Recording. Say the treasure name.");
 
       state.stopTimer = window.setTimeout(function () {
-        stopRecording();
+        stop();
       }, MAX_RECORD_MS);
     } catch (error) {
-      state.listening = false;
-      setListeningUi(false);
-      setStatus("Mic permission needed. Touch still works.");
-      speak("Mic permission needed. Touch still works.");
-
-      window.setTimeout(finishAsk, 900);
+      cleanupStream();
+      status("Mic permission needed. Voice was skipped.");
+      window.setTimeout(done, 900);
     }
   }
 
-  function stopRecording() {
+  function stop() {
     if (state.stopTimer) {
       window.clearTimeout(state.stopTimer);
       state.stopTimer = null;
     }
 
-    setListeningUi(false);
-
     if (!state.recorder) {
-      state.listening = false;
+      cleanupStream();
       return;
     }
 
     try {
       if (state.recorder.state !== "inactive") {
         state.recorder.stop();
+      } else {
+        cleanupStream();
       }
     } catch (error) {
       cleanupStream();
+      done();
     }
   }
 
@@ -449,7 +280,7 @@
     state.stream = null;
     state.recorder = null;
     state.chunks = [];
-    state.listening = false;
+    state.isRecording = false;
   }
 
   function finishRecording() {
@@ -461,42 +292,41 @@
     cleanupStream();
 
     if (!blob.size) {
-      setStatus("No voice caught. Try again or skip.");
-      speak("No voice caught. Try again or skip.");
+      status("No voice caught. Try again.");
       return;
     }
+
+    status("Saving voice to treasure " + treasureNumber + ".");
 
     const reader = new FileReader();
 
     reader.addEventListener("loadend", function () {
       state.labels[String(treasureNumber)] = reader.result;
 
-      if (saveLabels()) {
-        setStatus("Saved. Playing it back.");
-        beep(520, 80);
-
-        window.setTimeout(function () {
-          playLabel(treasureNumber, function () {
-            setStatus("Voice replay saved to treasure " + treasureNumber + ".");
-            window.setTimeout(finishAsk, 650);
-          });
-        }, 180);
-      } else {
-        setStatus("Voice recorded, but this device storage is full.");
-        speak("Voice recorded, but this device storage is full.");
-        window.setTimeout(finishAsk, 900);
+      if (!saveLabels()) {
+        status("Device storage is full. Voice could not save.");
+        window.setTimeout(done, 900);
+        return;
       }
+
+      status("Voice saved to treasure " + treasureNumber + ".");
+
+      guide("saved", null, function () {
+        window.setTimeout(done, 350);
+      });
     });
 
     reader.readAsDataURL(blob);
   }
 
-  function playLabel(treasureNumber, done) {
+  function replay(treasureNumber, callback) {
+    loadLabels();
+
     const src = state.labels[String(treasureNumber)];
 
-    if (!src || isSilent()) {
-      if (typeof done === "function") {
-        done();
+    if (!src) {
+      if (typeof callback === "function") {
+        callback();
       }
 
       return;
@@ -506,14 +336,14 @@
       const audio = new Audio(src);
 
       audio.addEventListener("ended", function () {
-        if (typeof done === "function") {
-          done();
+        if (typeof callback === "function") {
+          callback();
         }
       }, { once: true });
 
       audio.addEventListener("error", function () {
-        if (typeof done === "function") {
-          done();
+        if (typeof callback === "function") {
+          callback();
         }
       }, { once: true });
 
@@ -521,65 +351,65 @@
 
       if (attempt && typeof attempt.catch === "function") {
         attempt.catch(function () {
-          if (typeof done === "function") {
-            done();
+          if (typeof callback === "function") {
+            callback();
           }
         });
       }
     } catch (error) {
-      if (typeof done === "function") {
-        done();
+      if (typeof callback === "function") {
+        callback();
       }
     }
   }
 
-  function cueFind(treasureNumber, done) {
-    if (isSilent()) {
-      if (typeof done === "function") {
-        done();
-      }
+  function cueFind(treasureNumber, callback) {
+    const number = Number(treasureNumber) || 1;
 
-      return;
+    guide("find", number, function () {
+      window.setTimeout(function () {
+        replay(number, callback);
+      }, 250);
+    });
+  }
+
+  function clear() {
+    state.labels = {};
+
+    try {
+      localStorage.removeItem(VOICE_KEY);
+    } catch (error) {
+      saveLabels();
     }
-
-    speak("Go find treasure " + treasureNumber + ".");
-
-    window.setTimeout(function () {
-      playLabel(treasureNumber, done);
-    }, 850);
   }
 
-  function ask(treasureNumber, done) {
+  function labels() {
     loadLabels();
-    showVoiceCard(treasureNumber, done);
-  }
-
-  function boot() {
-    readDom();
-    injectStyle();
-    readMode();
-    loadLabels();
+    return Object.assign({}, state.labels);
   }
 
   window.PixelPrixVoice = {
-    ask: ask,
-    replay: playLabel,
-    play: playLabel,
+    guide: guide,
+    say: robotSay,
+    start: start,
+    stop: stop,
+    replay: replay,
+    play: replay,
     cueFind: cueFind,
-    clear: clearLabels,
-    labels: function () {
-      return Object.assign({}, state.labels);
-    },
-    speak: speak
+    clear: clear,
+    labels: labels
   };
 
   window.addEventListener("pagehide", function () {
-    stopRecording();
+    stop();
+
+    try {
+      if (window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+      }
+    } catch (error) {}
   });
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", boot);
-  } else {
-    boot();
-  }
+  loadMode();
+  loadLabels();
 })();
