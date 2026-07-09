@@ -1,9 +1,13 @@
 // js/pixelprix-voice.js
 // PixelPrix — Robot Guide + Human Voice Replay Layer
-// Owns: short robot guide prompts, recording the kid/family treasure voice, saving it to a treasure number, replaying it during cleanup.
-// Does NOT own: camera, room shot, treasure loop, song, robot choice screen, PING, NET, CORE.
+// Owns: robot guide prompts, human treasure voice recording, local save, cleanup replay.
+// Does NOT own: camera, room shot, treasure loop, song, robot choice screen, landing page, PING, NET, CORE.
+// Contract:
+//   Robot guide = PixelPrixVoice.guide()
+//   Human recording = PixelPrixVoice.start()
+//   Cleanup replay = PixelPrixVoice.cueFind()
 // Rule: Robot guides the game. Human voice names the treasure. Cleanup replays the human voice.
-// No speech-to-text. No robot guessing the object. No robot replacing the kid/family treasure name.
+// No speech-to-text. No robot guessing the treasure. No robot replacing the kid/family treasure name.
 
 (function () {
   "use strict";
@@ -21,8 +25,13 @@
     activeTreasureNumber: 0,
     stopTimer: null,
     callbacks: null,
-    isRecording: false
+    isRecording: false,
+    cardDone: null
   };
+
+  function byId(id) {
+    return document.getElementById(id);
+  }
 
   function loadMode() {
     try {
@@ -60,20 +69,40 @@
   }
 
   function status(message) {
+    const helper = byId("helper");
+    const cardStatus = byId("pixelprix-voice-status");
+
+    if (helper) {
+      helper.textContent = message;
+    }
+
+    if (cardStatus) {
+      cardStatus.textContent = message;
+    }
+
     if (state.callbacks && typeof state.callbacks.onStatus === "function") {
       state.callbacks.onStatus(message);
     }
   }
 
-  function done() {
+  function finishCallbacks() {
     const callbacks = state.callbacks;
+    const cardDone = state.cardDone;
 
     state.callbacks = null;
+    state.cardDone = null;
     state.activeTreasureNumber = 0;
     state.isRecording = false;
 
+    removeCard();
+
     if (callbacks && typeof callbacks.onDone === "function") {
       callbacks.onDone();
+      return;
+    }
+
+    if (typeof cardDone === "function") {
+      cardDone();
     }
   }
 
@@ -82,7 +111,6 @@
       if (typeof after === "function") {
         after();
       }
-
       return;
     }
 
@@ -91,29 +119,41 @@
         if (typeof after === "function") {
           after();
         }
-
         return;
       }
 
       window.speechSynthesis.cancel();
 
+      if (window.speechSynthesis.resume) {
+        window.speechSynthesis.resume();
+      }
+
       const utterance = new SpeechSynthesisUtterance(text);
-      utterance.rate = 0.92;
-      utterance.pitch = loadMode() === "male" ? 0.82 : 1.12;
+      utterance.lang = "en-US";
+      utterance.rate = 0.9;
+      utterance.pitch = loadMode() === "male" ? 0.78 : 1.16;
+      utterance.volume = 1;
 
-      utterance.onend = function () {
+      let finished = false;
+
+      function finishOnce() {
+        if (finished) {
+          return;
+        }
+
+        finished = true;
+
         if (typeof after === "function") {
           after();
         }
-      };
+      }
 
-      utterance.onerror = function () {
-        if (typeof after === "function") {
-          after();
-        }
-      };
+      utterance.onend = finishOnce;
+      utterance.onerror = finishOnce;
 
       window.speechSynthesis.speak(utterance);
+
+      window.setTimeout(finishOnce, Math.max(1300, text.length * 80));
     } catch (error) {
       if (typeof after === "function") {
         after();
@@ -126,37 +166,21 @@
 
     if (key === "welcome") {
       text = "Welcome to PixelPrix.";
-    }
-
-    if (key === "adventure") {
+    } else if (key === "adventure") {
       text = "Let's have an adventure.";
-    }
-
-    if (key === "room") {
+    } else if (key === "room") {
       text = "Take the room picture first.";
-    }
-
-    if (key === "treasure") {
+    } else if (key === "treasure") {
       text = "Look for a treasure.";
-    }
-
-    if (key === "name") {
+    } else if (key === "name") {
       text = "Name this treasure?";
-    }
-
-    if (key === "record") {
+    } else if (key === "record") {
       text = "Record your voice.";
-    }
-
-    if (key === "saved") {
+    } else if (key === "saved") {
       text = "Voice saved.";
-    }
-
-    if (key === "find") {
+    } else if (key === "find") {
       text = "Go find treasure " + String(detail || 1) + ".";
-    }
-
-    if (!text) {
+    } else {
       text = String(key || "");
     }
 
@@ -197,16 +221,20 @@
 
     if (!state.activeTreasureNumber) {
       status("No treasure number found.");
-      window.setTimeout(done, 400);
+      window.setTimeout(finishCallbacks, 400);
       return;
     }
 
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !window.MediaRecorder) {
       status("Mic is not available here. Voice was skipped.");
-      window.setTimeout(done, 900);
+      window.setTimeout(finishCallbacks, 900);
       return;
     }
 
+    openMic();
+  }
+
+  async function openMic() {
     try {
       if (window.speechSynthesis) {
         window.speechSynthesis.cancel();
@@ -225,6 +253,22 @@
       state.recorder = new MediaRecorder(stream, options);
       state.isRecording = true;
 
+      const card = byId("pixelprix-voice-card");
+      const title = byId("pixelprix-voice-title");
+      const record = byId("pixelprix-record-name");
+
+      if (card) {
+        card.classList.add("listening");
+      }
+
+      if (title) {
+        title.textContent = "Recording";
+      }
+
+      if (record) {
+        record.textContent = "STOP RECORDING";
+      }
+
       state.recorder.addEventListener("dataavailable", function (event) {
         if (event.data && event.data.size > 0) {
           state.chunks.push(event.data);
@@ -232,7 +276,6 @@
       });
 
       state.recorder.addEventListener("stop", finishRecording);
-
       state.recorder.start();
 
       status("Recording. Say the treasure name.");
@@ -243,7 +286,7 @@
     } catch (error) {
       cleanupStream();
       status("Mic permission needed. Voice was skipped.");
-      window.setTimeout(done, 900);
+      window.setTimeout(finishCallbacks, 900);
     }
   }
 
@@ -266,7 +309,7 @@
       }
     } catch (error) {
       cleanupStream();
-      done();
+      finishCallbacks();
     }
   }
 
@@ -305,14 +348,14 @@
 
       if (!saveLabels()) {
         status("Device storage is full. Voice could not save.");
-        window.setTimeout(done, 900);
+        window.setTimeout(finishCallbacks, 900);
         return;
       }
 
       status("Voice saved to treasure " + treasureNumber + ".");
 
       guide("saved", null, function () {
-        window.setTimeout(done, 350);
+        window.setTimeout(finishCallbacks, 350);
       });
     });
 
@@ -328,12 +371,12 @@
       if (typeof callback === "function") {
         callback();
       }
-
       return;
     }
 
     try {
       const audio = new Audio(src);
+      audio.volume = 1;
 
       audio.addEventListener("ended", function () {
         if (typeof callback === "function") {
@@ -373,6 +416,152 @@
     });
   }
 
+  function injectStyle() {
+    if (byId("pixelprix-voice-style")) {
+      return;
+    }
+
+    const style = document.createElement("style");
+    style.id = "pixelprix-voice-style";
+    style.textContent = `
+      .pixelprix-voice-card {
+        margin-top: 9px;
+        padding: 12px;
+        border-radius: 20px;
+        background: rgba(5, 6, 10, 0.84);
+        border: 2px solid rgba(255, 255, 255, 0.24);
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.5);
+        color: #fff7df;
+        text-align: center;
+        touch-action: manipulation;
+        user-select: none;
+      }
+
+      .pixelprix-voice-card.listening {
+        background: rgba(255, 139, 209, 0.22);
+        border-color: rgba(255, 211, 77, 0.72);
+      }
+
+      .pixelprix-voice-card h2 {
+        margin: 0 0 7px;
+        color: #ffd34d;
+        font-size: clamp(1.35rem, 6vw, 2.4rem);
+        line-height: 1;
+        text-shadow: 0 3px 0 #000;
+      }
+
+      .pixelprix-voice-card p {
+        margin: 0 0 7px;
+        color: #fff7df;
+        font-size: clamp(0.9rem, 3.5vw, 1.1rem);
+        line-height: 1.18;
+        font-weight: 900;
+        text-shadow: 0 2px 0 #000;
+      }
+
+      .pixelprix-voice-status {
+        min-height: 18px;
+        color: rgba(255, 247, 223, 0.9);
+        font-size: clamp(0.74rem, 2.85vw, 0.9rem);
+        font-weight: 900;
+        text-shadow: 0 2px 0 #000;
+      }
+
+      .pixelprix-voice-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-top: 8px;
+      }
+
+      .pixelprix-voice-actions button {
+        min-height: 46px;
+        border-radius: 999px;
+        padding: 8px 10px;
+        color: #050505;
+        background: linear-gradient(135deg, #6dff91, #dbff73);
+        font: inherit;
+        font-size: clamp(0.86rem, 3.4vw, 1rem);
+        font-weight: 900;
+        border: 0;
+        box-shadow: 0 5px 0 rgba(0, 0, 0, 0.62);
+      }
+
+      .pixelprix-voice-actions button.skip {
+        background: #ffd34d;
+      }
+    `;
+
+    document.head.appendChild(style);
+  }
+
+  function removeCard() {
+    const card = byId("pixelprix-voice-card");
+
+    if (card) {
+      card.remove();
+    }
+  }
+
+  function ask(treasureNumber, onDone) {
+    injectStyle();
+    removeCard();
+
+    const panel = document.querySelector(".panel");
+
+    if (!panel) {
+      if (typeof onDone === "function") {
+        onDone();
+      }
+      return;
+    }
+
+    state.cardDone = onDone;
+
+    const card = document.createElement("section");
+    card.id = "pixelprix-voice-card";
+    card.className = "pixelprix-voice-card";
+    card.innerHTML = `
+      <h2 id="pixelprix-voice-title">Name this treasure</h2>
+      <p>Tap RECORD YOUR VOICE. Say the treasure name.</p>
+      <div class="pixelprix-voice-status" id="pixelprix-voice-status">
+        Voice replay stays on this device.
+      </div>
+      <div class="pixelprix-voice-actions">
+        <button id="pixelprix-record-name" type="button">RECORD YOUR VOICE</button>
+        <button class="skip" id="pixelprix-skip-name" type="button">SKIP</button>
+      </div>
+    `;
+
+    panel.appendChild(card);
+
+    const record = byId("pixelprix-record-name");
+    const skip = byId("pixelprix-skip-name");
+
+    guide("name");
+
+    record.addEventListener("click", function () {
+      if (state.isRecording) {
+        stop();
+        return;
+      }
+
+      start(treasureNumber, {
+        onStatus: status,
+        onDone: function () {
+          if (typeof onDone === "function") {
+            onDone();
+          }
+        }
+      });
+    });
+
+    skip.addEventListener("click", function () {
+      status("Skipped voice replay.");
+      window.setTimeout(finishCallbacks, 300);
+    });
+  }
+
   function clear() {
     state.labels = {};
 
@@ -391,6 +580,7 @@
   window.PixelPrixVoice = {
     guide: guide,
     say: robotSay,
+    ask: ask,
     start: start,
     stop: stop,
     replay: replay,
