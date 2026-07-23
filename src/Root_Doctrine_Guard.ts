@@ -479,13 +479,13 @@ export const DEFAULT_ROOT_DOCTRINE: RootDoctrineConfig = {
   expected_assets: [
     "octopus",
     "halo",
-    "colosieum"
+    "colosseum"
   ],
 
   asset_paths: {
     octopus: "Apps/xr-room-vr-build/public/assets/octopus.glb",
     halo: "Apps/xr-room-vr-build/public/assets/halo.webp",
-    colosieum: "Apps/xr-room-vr-build/public/assets/colosieum.glb"
+    colosieum: "Apps/xr-room-vr-build/public/assets/colosseum.glb"
   },
 
   github_owner: "cybercrowd99",
