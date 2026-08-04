@@ -1,6 +1,6 @@
 // CyberCrowd CyberShop
 // Customer Action Model
-//
+// Core-file
 // Purpose:
 // Preserve evidence of customer-controlled actions
 // within the CyberShop commerce lifecycle.
