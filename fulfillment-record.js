@@ -1,27 +1,47 @@
-// CyberCrowd CyberShop
-// Fulfillment Record Model
-//
-// Purpose:
-// Preserve evidence that a commerce obligation
-// moved through fulfillment lifecycle states.
-//
-// Owns:
-// - fulfillment record shape
-// - transaction linkage
-// - order linkage
-// - service/product fulfillment evidence
-// - completion tracking
-//
-// Does NOT own:
-// - payment execution
-// - banking accounts
-// - custody of funds
-// - financial authority
-// - identity verification
-// - participant relationships
-//
-// Doctrine:
-// Fulfillment Evidence ≠ Financial Authority
+/**
+ * CyberCrowd CORE — CyberShop Fulfillment Record Model
+ *
+ * Layer:
+ * CORE / CyberShop Commerce Evidence Boundary
+ *
+ * Purpose:
+ * Preserve evidence that a commerce obligation
+ * moved through fulfillment lifecycle states.
+ *
+ * Owns:
+ * - fulfillment record shape
+ * - transaction linkage reference
+ * - order linkage reference
+ * - service/product fulfillment evidence
+ * - completion tracking evidence
+ *
+ * Does NOT Own:
+ * - payment execution
+ * - banking accounts
+ * - custody of funds
+ * - financial authority
+ * - identity verification
+ * - participant relationships
+ * - commerce UI
+ * - NET surfaces
+ *
+ * Boundary:
+ * Fulfillment lifecycle information enters CORE
+ * as evidence and record linkage only.
+ * CORE preserves completion evidence without
+ * controlling financial activity.
+ *
+ * Security:
+ * - No hidden synchronization
+ * - No identity binding
+ * - No behavioral profiling
+ * - No external side effects
+ *
+ * Doctrine:
+ * Fulfillment Evidence ≠ Financial Authority
+ */
+
+// fulfillment-record.ts
 
 function nowISO() {
   return new Date().toISOString();
