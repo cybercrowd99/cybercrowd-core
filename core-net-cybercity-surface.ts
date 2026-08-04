@@ -1,6 +1,8 @@
 /**
  * CORE — NET CyberCity Surface
  *
+ * CyberCrowd-Core — CORE → NET CyberCity Surface Boundary Artifact
+ *
  * CoreNetCyberCitySurface is the passive CORE-to-NET exposure
  * boundary for CyberCity structural continuity.
  *
