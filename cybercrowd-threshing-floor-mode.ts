@@ -1,24 +1,50 @@
 /**
- * cybercrowd-threshing-floor-mode.ts
+ * CyberCrowd CORE — Threshing Floor Mode Organ
  *
- * CyberCrowd Threshing Floor Mode
+ * Layer:
+ * CORE / Colosseum Adversarial Mode Boundary
  *
  * ONE JOB:
- * Activate adversarial arena physics inside the Colosseum.
+ * Activate and manage adversarial arena physics inside the Colosseum.
  *
- * Threshing Floor is:
- * - collision-heavy
- * - debate-forward
- * - moment-intense
- * - creator vs creator
- * - idea vs idea
+ * Owns:
+ * - threshing floor activation state
+ * - adversarial collision records
+ * - moment capture references
+ * - arena mode lifecycle state
  *
- * This is NOT chat.
- * This is NOT feed.
- * This is NOT moderation.
+ * Does NOT Own:
+ * - chat systems
+ * - feed systems
+ * - moderation authority
+ * - identity ownership
+ * - authentication
+ * - payments
+ * - analytics
+ * - behavioral profiling
+ * - surveillance systems
+ * - NET surface rendering
+ * - external routing authority
  *
- * This is the adversarial mode of the Colosseum.
+ * Boundary:
+ * Colosseum arena signals enter CORE.
+ * CORE maintains bounded adversarial mode state.
+ * Outputs remain mode artifacts only.
+ *
+ * Security:
+ * - No hidden synchronization
+ * - No identity escalation
+ * - No predictive profiling
+ * - No external side effects beyond declared arena presence updates
+ *
+ * Doctrine:
+ * Threshing Floor Mode ≠ Chat
+ * Threshing Floor Mode ≠ Feed
+ * Threshing Floor Mode ≠ Moderation
+ * Adversarial Arena State ≠ Identity Authority
  */
+
+// cybercrowd-threshing-floor-mode.ts
 
 import CyberCrowdColosseum from "./cybercrowd-colosseum";
 import CyberCrowdArenaFloorSystem from "./cybercrowd-arena-floor-system";
