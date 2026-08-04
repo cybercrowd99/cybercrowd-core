@@ -1,6 +1,8 @@
 /**
  * CyberCrowd — CORE NET uIDL Bridge
  *
+ * CyberCrowd-Core — CORE ↔ NET uIDL Boundary Artifact
+ *
  * ONE JOB:
  * Provide a neutral structural bridge between NET-visible
  * uIDL references and CORE-controlled processing boundaries.
