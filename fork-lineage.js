@@ -1,3 +1,45 @@
+/**
+ * CyberCrowd CORE — Fork Lineage Organ
+ *
+ * Layer:
+ * CORE / Sovereign State Lineage Boundary
+ *
+ * Owns:
+ * - fork lineage computation
+ * - fork lineage validation
+ * - identity lineage computation
+ * - lineage hash generation
+ * - lineage state validation evidence
+ *
+ * Does NOT Own:
+ * - sealing authority
+ * - doctrine enforcement
+ * - arbitration
+ * - punishment systems
+ * - UI rendering
+ * - NET surface handling
+ * - authentication
+ * - payments
+ * - analytics
+ * - behavioral tracking
+ * - external routing authority
+ *
+ * Boundary:
+ * SovereignCoreAPI state enters CORE.
+ * Fork lineage is computed and validated.
+ * Lineage artifacts are returned as evidence only.
+ *
+ * Security:
+ * - No hidden synchronization
+ * - No identity creation
+ * - No authority escalation
+ * - No external side effects beyond declared replay events
+ *
+ * Doctrine:
+ * Fork Lineage Evidence ≠ Identity Authority
+ * Lineage Validation ≠ Governance Enforcement
+ */
+
 // fork-lineage.js
 // CyberCrowd Core — Fork Lineage
 // Owns: computing and validating fork lineage from SovereignCoreAPI state.
