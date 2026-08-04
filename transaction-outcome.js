@@ -137,3 +137,4 @@ export const TransactionOutcome = {
   createTransactionOutcome,
   readTransactionOutcomeShape,
 };
+
