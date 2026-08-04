@@ -18,7 +18,7 @@
 // - financial authority
 // - credit decisions
 // - identity verification
-// - fulfillment execution
+// - fulfillment execution 
 //
 // Doctrine:
 // Transaction Decision Evidence ≠ Financial Authority
