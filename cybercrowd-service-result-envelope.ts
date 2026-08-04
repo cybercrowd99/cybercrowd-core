@@ -1,28 +1,53 @@
 /**
- * CyberCrowd — CyberService Result Envelope
+ * CyberCrowd CORE — CyberService Result Envelope Organ
  *
- * CyberServiceResultEnvelope is the output boundary of the
- * CyberCrowd-Core execution subsystem.
+ * Layer:
+ * CORE / Capability Output Boundary
  *
- * It receives capability-defined outputs from
- * CyberCrowdServiceEngine without allowing execution results
- * to collapse into identity, intent, authority, or meaning.
+ * ONE JOB:
+ * Preserve bounded capability outputs produced by
+ * the CyberCrowd-Core execution subsystem.
  *
- * It does not:
- * - contain identity
- * - contain intent
- * - grant permissions
- * - create authority
- * - infer behavior
- * - predict future actions
- * - interpret meaning
+ * Owns:
+ * - CyberService result artifact shape
+ * - execution lineage reference
+ * - output reference preservation
+ * - passive result lifecycle state
+ * - sovereignty boundary separation
  *
- * CyberServiceResultEnvelope only:
- * - records capability output
- * - preserves execution lineage
- * - maintains sovereignty boundaries
- * - separates result from interpretation
+ * Does NOT Own:
+ * - identity
+ * - intent
+ * - permissions
+ * - authority creation
+ * - behavior inference
+ * - prediction
+ * - meaning interpretation
+ * - user profiling
+ * - analytics
+ * - surveillance
+ * - NET surface handling
+ * - UI rendering
+ *
+ * Boundary:
+ * CyberServiceActionExecutionEnvelope enters CORE.
+ * CORE produces a bounded capability result artifact.
+ * Result remains separate from interpretation.
+ *
+ * Security:
+ * - No hidden synchronization
+ * - No identity binding
+ * - No intent inference
+ * - No behavioral modeling
+ * - No authority escalation
+ *
+ * Doctrine:
+ * Capability Result ≠ Identity Intelligence
+ * Capability Output ≠ Authority
+ * Execution Evidence ≠ Interpretation
  */
+
+// cybercrowd-service-result-envelope.ts
 
 import { CyberServiceActionExecutionEnvelope } from "./cybercrowd-service-action-execution-envelope";
 
@@ -53,14 +78,11 @@ export interface CyberServiceResultEnvelope {
    * Opaque result reference.
    *
    * Structural only.
-   * No semantic meaning.
    */
   resultId: string;
 
   /**
    * Capability output reference.
-   *
-   * Represents produced output.
    *
    * Contains no:
    * - identity
@@ -72,10 +94,6 @@ export interface CyberServiceResultEnvelope {
 
   /**
    * Passive result lifecycle state.
-   *
-   * Not interpretation.
-   * Not prediction.
-   * Not authority.
    */
   resultState: "PRODUCED" | "FAILED";
 }
@@ -83,19 +101,15 @@ export interface CyberServiceResultEnvelope {
 /**
  * Build a CyberServiceResultEnvelope artifact.
  *
- * Creates the CyberCrowd-Core output membrane:
- *
  * CyberCrowdServiceEngine:
  *   capability execution
  *
  * CyberServiceResultEnvelope:
  *   bounded capability result
  *
- * It does not:
- * - interpret output
- * - assign meaning
- * - resolve identity
- * - predict behavior
+ * No interpretation.
+ * No identity resolution.
+ * No prediction.
  */
 export function buildCyberServiceResultEnvelope(
   execution: CyberServiceActionExecutionEnvelope,
@@ -103,9 +117,11 @@ export function buildCyberServiceResultEnvelope(
   outputRef: string
 ): CyberServiceResultEnvelope {
   const artifact: CyberServiceResultEnvelope = {
-    doctrine: "CyberCrowd_CyberServiceResultEnvelope",
+    doctrine:
+      "CyberCrowd_CyberServiceResultEnvelope",
 
-    status: "CYBERCROWD_SERVICE_RESULT_ENVELOPE",
+    status:
+      "CYBERCROWD_SERVICE_RESULT_ENVELOPE",
 
     execution,
 
@@ -113,7 +129,8 @@ export function buildCyberServiceResultEnvelope(
 
     outputRef,
 
-    resultState: "PRODUCED",
+    resultState:
+      "PRODUCED",
   };
 
   return Object.freeze(artifact);
