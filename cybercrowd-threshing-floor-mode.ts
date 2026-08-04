@@ -1,7 +1,7 @@
 /**
  * CyberCrowd CORE — Threshing Floor Mode Organ
  *
- * Layer:
+ * Layer: 
  * CORE / Colosseum Adversarial Mode Boundary
  *
  * ONE JOB:
