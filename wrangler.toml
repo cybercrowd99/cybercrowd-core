@@ -1,0 +1,7 @@
+name = "cybercrowd-core"
+main = "src/index.ts"
+compatibility_date = "2026-08-04"
+
+# Private service worker only.
+# No routes.
+# No public URL exposure.
