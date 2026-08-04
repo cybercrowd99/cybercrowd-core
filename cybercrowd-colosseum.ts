@@ -1,16 +1,29 @@
-// cybercrowd-colosseum.ts
-//
-// The CyberCrowd Colosseum
-//
-// ONE JOB:
-// Tie together identity, I CAN, objects, intents,
-// proximity, PING, carrier, and moments
-// into one live arena.
-//
-// This is NOT a framework.
-// This is NOT a feed.
-// This is NOT a chat app.
-// This is the live system.
+/**
+ * CyberCrowd — CyberCrowd Colosseum
+ *
+ * CyberCrowd-Core — Live System Coordination Organ
+ *
+ * The CyberCrowd Colosseum is the live coordination organ.
+ *
+ * It ties together identity, I CAN, objects, intents,
+ * proximity, PING, carrier, and moments
+ * into one live arena.
+ *
+ * This is NOT:
+ * - a framework
+ * - a feed
+ * - a chat app
+ *
+ * This is the live system boundary.
+ *
+ * It does not:
+ * - create authority
+ * - replace identity sovereignty
+ * - interpret intent
+ * - perform adjudication
+ * - grant permissions
+ * - transform source artifacts
+ */
 
 import CyberCrowdPingSystem from "./cybercrowd-ping-system";
 import CyberCrowdCarrierSystem from "./cybercrowd-carrier-system";
