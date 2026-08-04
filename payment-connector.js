@@ -1,28 +1,40 @@
-// CyberCrowd CyberShop
-// Payment Connector Model
-//
-// Purpose:
-// Preserve the controlled boundary between
-// CyberShop commerce lifecycle records and
-// external payment provider connections.
-//
-// Owns:
-// - payment connector record shape
-// - provider reference
-// - payment request linkage
-// - connector state evidence
-//
-// Does NOT own:
-// - banking accounts
-// - custody of funds
-// - financial authority
-// - credit decisions
-// - payment execution authority
-// - identity verification
-// - participant relationships
-//
-// Doctrine:
-// Payment Connector Evidence ≠ Financial Authority
+/**
+ * CyberCrowd CORE
+ * CyberShop Payment Connector Model
+ *
+ * Layer:
+ * CORE / CyberShop Commerce Evidence Boundary
+ *
+ * Purpose:
+ * Preserve the controlled boundary between
+ * CyberShop commerce lifecycle records and
+ * external payment provider connections.
+ *
+ * Owns:
+ * - payment connector record shape
+ * - provider reference preservation
+ * - payment request linkage reference
+ * - connector state evidence
+ *
+ * Does NOT Own:
+ * - banking accounts
+ * - custody of funds
+ * - financial authority
+ * - credit decisions
+ * - payment execution authority
+ * - identity verification
+ * - participant relationships
+ * - external provider control
+ *
+ * Boundary:
+ * External connector information enters CORE
+ * as evidence and linkage only.
+ * CORE preserves the record boundary without
+ * controlling financial activity.
+ *
+ * Doctrine:
+ * Payment Connector Evidence ≠ Financial Authority
+ */
 
 function nowISO() {
   return new Date().toISOString();
