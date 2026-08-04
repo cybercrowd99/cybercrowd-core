@@ -1,102 +1,124 @@
 /**
- * CyberCrowd — CORE NET uIDL Ping Containment
+ * CyberCrowd — CORE NET uIDL Routing Target
+ *
+ * CyberCrowd-Core — CORE → NET Routing Boundary Artifact
  *
  * ONE JOB:
- * Contain a neutral structural PING signal at the CORE organ
- * boundary without interpreting identity, intent, permissions,
- * authority, or meaning.
+ * Define the allowed CORE destination categories for
+ * neutral CoreNetUIDLBridge routing.
  *
- * PING is:
- * - structural continuity
- * - lineage heartbeat
- * - non-semantic
- * - non-authoritative
- * - non-identity
+ * It does:
+ * - declare CORE destination vocabulary
+ * - preserve routing boundaries
+ * - maintain uIDL structural separation
  *
- * It allows:
- * - CORE to enforce containment rules
- * - organ-level lineage to remain intact
- * - membrane boundaries to remain sovereign
- *
- * It does not:
+ * It does NOT:
+ * - route artifacts
  * - execute actions
  * - interpret identity
- * - infer intent
+ * - interpret intent
  * - grant permissions
  * - create authority
- * - transform uIDL references
  * - expose private CORE state
  */
 
-import { CoreNetUIDLOrganReceiver } from "./core-net-uidl-organ-receiver";
+
+export type CoreNetUIDLRoutingTarget =
+  | "HALO"
+  | "BIFF"
+  | "SECRETARY"
+  | "OCTOPUS"
+  | "DEWEY"
+  | "PING"
+  | "TURD"
+  | "VACUUM"
+  | "ARCHIVE"
+  | "INEZ"
+  | "CLEAR"
+  | "CYBERSERVICES";
 
 
-export type CoreNetUIDLPingContainmentState =
-  | "PING_CONTAINED"
-  | "PING_TRANSFERRED"
-  | "FAILED";
-
-
-export interface CoreNetUIDLPingContainment {
+export interface CoreNetUIDLRoutingDeclaration {
 
   /**
    * Governing doctrine.
    */
   doctrine:
-    "CyberCrowd_CoreNetUIDLPingContainment";
+    "CyberCrowd_CoreNetUIDLRoutingTarget";
 
 
   /**
    * Structural discriminator.
    */
   status:
-    "CORE_NET_UIDL_PING_CONTAINMENT";
+    "CORE_NET_UIDL_ROUTING_DECLARATION";
 
 
   /**
-   * Contain a neutral PING signal.
+   * Neutral uIDL reference.
    *
-   * Never:
-   * - interprets identity
-   * - interprets intent
-   * - grants permissions
-   * - creates authority
+   * Structural only.
+   * No identity meaning.
    */
-  containPing(
-    receiver: CoreNetUIDLOrganReceiver
-  ): Promise<CoreNetUIDLPingContainmentState>;
+  uidl:
+    string;
+
+
+  /**
+   * Declared CORE destination.
+   *
+   * Routing vocabulary only.
+   * Not authority.
+   */
+  target:
+    CoreNetUIDLRoutingTarget;
+
+
+  /**
+   * Passive routing lifecycle state.
+   *
+   * Not execution.
+   * Not permission.
+   */
+  routingState:
+    | "DECLARED"
+    | "ACCEPTED"
+    | "REJECTED";
 }
 
 
 /**
- * Build CORE NET uIDL ping containment organ.
+ * Build CORE NET uIDL routing declaration.
  *
- * Creates structural PING containment only.
+ * Creates structural destination information only.
  *
  * It does not:
- * - execute capability operations
+ * - route execution
  * - interpret users
- * - infer meaning
- * - expose private data
+ * - assign authority
+ * - modify sovereignty
  */
-export function buildCoreNetUIDLPingContainment(
-  containmentFn: (
-    receiver: CoreNetUIDLOrganReceiver
-  ) => Promise<CoreNetUIDLPingContainmentState>
-): CoreNetUIDLPingContainment {
+export function buildCoreNetUIDLRoutingDeclaration(
+  uidl: string,
+  target: CoreNetUIDLRoutingTarget
+): CoreNetUIDLRoutingDeclaration {
 
-  const organ: CoreNetUIDLPingContainment = {
+  const artifact: CoreNetUIDLRoutingDeclaration = {
 
     doctrine:
-      "CyberCrowd_CoreNetUIDLPingContainment",
+      "CyberCrowd_CoreNetUIDLRoutingTarget",
 
     status:
-      "CORE_NET_UIDL_PING_CONTAINMENT",
+      "CORE_NET_UIDL_ROUTING_DECLARATION",
 
-    containPing:
-      containmentFn,
+    uidl,
+
+    target,
+
+    routingState:
+      "DECLARED",
   };
 
 
-  return Object.freeze(organ);
+  return Object.freeze(artifact);
 }
