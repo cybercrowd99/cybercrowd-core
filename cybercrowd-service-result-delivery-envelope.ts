@@ -1,6 +1,8 @@
 /**
  * CyberCrowd — CyberService Result Delivery Envelope
  *
+ * CyberCrowd-Core — CyberService Result Delivery Boundary
+ *
  * CyberServiceResultDeliveryEnvelope is the structural delivery
  * boundary for routed capability-defined results produced by
  * CyberCrowd-Core.
@@ -24,7 +26,7 @@
  * - receives routed capability results
  * - confirms structural delivery state
  * - preserves execution lineage
- * - maintains sovereignty boundaries
+ * - maintains CyberCrowd-Core sovereignty boundaries
  * - separates delivery from interpretation
  */
 
