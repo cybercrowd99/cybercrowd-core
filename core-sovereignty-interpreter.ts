@@ -1,6 +1,8 @@
 /**
  * CORE SOVEREIGNTY — Interpreter
  *
+ * CyberCrowd-Core — Sovereignty Boundary Artifact
+ *
  * CoreSovereigntyInterpreter is the CORE boundary artifact
  * responsible for interpreting permitted structural continuity
  * conditions after CoreContinuityIntake.
