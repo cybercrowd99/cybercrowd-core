@@ -1,6 +1,8 @@
 /**
  * CyberCrowd — CORE NET uIDL Bridge Intake
  *
+ * CyberCrowd-Core — CORE uIDL Bridge Intake Boundary Artifact
+ *
  * ONE JOB:
  * Receive neutral CoreNetUIDLBridge artifacts entering CORE
  * without interpreting identity, intent, permissions,
