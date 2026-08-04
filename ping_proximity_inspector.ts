@@ -1,3 +1,41 @@
+/**
+ * CyberCrowd CORE — Proximity Layer
+ *
+ * Layer:
+ * CORE / Signal Inspection
+ *
+ * Owns:
+ * - Inspecting SignalPacket state proximity
+ * - Determining the next blink-state position in the sequence
+ * - Creating a frozen PingSnapshot visibility artifact
+ * - Returning PingProximity inspection output
+ *
+ * Does NOT Own:
+ * - NET surface rendering
+ * - UI motion display
+ * - Identity ownership
+ * - Authentication
+ * - Payments
+ * - Analytics
+ * - Tracking
+ * - Prediction systems
+ * - External routing
+ * - Persistent storage authority
+ *
+ * Boundary:
+ *
+ * SignalPacket
+ *      ↓
+ * CORE proximity inspection
+ *      ↓
+ * PingProximity + PingSnapshot
+ *
+ * Security:
+ * - No hidden synchronization
+ * - No behavioral profiling
+ * - No external side effects
+ */
+
 import { SignalPacket } from '../models/SignalPacket';
 import { PingSnapshot } from './ping_snapshot';
 
