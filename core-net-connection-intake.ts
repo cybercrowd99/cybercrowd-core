@@ -1,6 +1,8 @@
 /**
  * CORE NET — Connection Intake
  *
+ * CyberCrowd-Core — CORE → NET Connection Intake Boundary Artifact
+ *
  * CoreNetConnectionIntake is the CORE → NET boundary artifact
  * responsible for receiving sovereignty-safe structural readiness
  * from CoreSovereigntyInterpreter before any NET connection
