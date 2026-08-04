@@ -1,17 +1,37 @@
 /**
  * CyberCrowd — Signal Snapshot Generator
  *
- * Owns:
- * - Generate snapshot identifier
- * - Preserve SignalPacket structure
- * - Return snapshot copy
+ * File:
+ * src/services/generateSnapshot.ts
  *
- * Does Not Own:
- * - Storage
- * - Persistence
+ * Lane:
+ * CORE / Signal Processing
+ *
+ * Owns:
+ * - Creating a snapshot reference for an existing SignalPacket
+ * - Preserving the original packet data
+ * - Attaching snapshot identity metadata
+ *
+ * Does NOT Own:
+ * - User identity storage
  * - Tracking
- * - Identity management
+ * - Analytics
  * - Routing
+ * - Persistence
+ * - Network communication
+ * - Ownership decisions
+ *
+ * Input:
+ * - Existing SignalPacket
+ *
+ * Output:
+ * - New SignalPacket with snapshotId attached
+ *
+ * Security:
+ * - No external calls
+ * - No hidden synchronization
+ * - No data enrichment
+ * - No mutation of original packet
  */
 
 import { SignalPacket } from '../models/SignalPacket';
