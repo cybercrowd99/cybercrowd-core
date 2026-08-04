@@ -1,6 +1,8 @@
 /**
  * CyberCrowd — CORE NET uIDL Ping Binding
  *
+ * CyberCrowd-Core — CORE uIDL Ping Binding Boundary Artifact
+ *
  * ONE JOB:
  * Bind a neutral structural PING signal at the CORE organ
  * boundary after CoreNetUIDL routing has completed.
