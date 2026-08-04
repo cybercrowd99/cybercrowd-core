@@ -1,3 +1,44 @@
+/**
+ * CyberCrowd CORE — Local Event Score Organ
+ *
+ * Layer:
+ * CORE / Local Signal Processing Boundary
+ *
+ * Owns:
+ * - local event input structure
+ * - local history reference structure
+ * - external signal input structure
+ * - local event score output artifact
+ * - bounded score computation
+ *
+ * Does NOT Own:
+ * - NET surface handling
+ * - UI rendering
+ * - identity ownership
+ * - authentication
+ * - payments
+ * - analytics systems
+ * - behavioral profiling
+ * - participant tracking
+ * - external routing
+ * - persistent storage authority
+ *
+ * Boundary:
+ * Local event signals enter CORE.
+ * CORE produces a bounded scoring artifact.
+ * The output remains a local calculation result.
+ *
+ * Security:
+ * - No hidden synchronization
+ * - No identity binding
+ * - No behavioral tracking
+ * - No external side effects
+ *
+ * Doctrine:
+ * Local Event Score ≠ Identity Intelligence
+ * Local Event Score ≠ Financial Authority
+ */
+
 // local-event-score-organ.ts
 
 export type EventInput = {
@@ -18,15 +59,15 @@ export type LocalHistory = {
 };
 
 export type ExternalSignals = {
-  weatherScore: number;        // 0–1
-  holidayScore: number;        // 0–1
-  competingEventScore: number; // 0–1
-  paydayProximityScore: number;// 0–1
+  weatherScore: number;
+  holidayScore: number;
+  competingEventScore: number;
+  paydayProximityScore: number;
 };
 
 export type LocalEventScoreOutput = {
-  score: number;               // 0–100
-  confidence: number;          // 0–1
+  score: number;
+  confidence: number;
   drivers: { label: string; impact: number }[];
   recommendations: string[];
 };
