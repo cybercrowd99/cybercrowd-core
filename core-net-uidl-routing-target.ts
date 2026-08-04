@@ -1,6 +1,8 @@
 /**
  * CyberCrowd — CORE NET uIDL Routing Target
  *
+ * CyberCrowd-Core — CORE → NET Routing Boundary Artifact
+ *
  * ONE JOB:
  * Define the allowed CORE destination categories for
  * neutral CoreNetUIDLBridge routing.
