@@ -1,31 +1,53 @@
 /**
- * CyberCrowd — CyberService Result Routing Envelope
+ * CyberCrowd CORE — CyberService Result Routing Envelope Organ
  *
- * CyberServiceResultRoutingEnvelope is the structural routing
- * boundary for capability-defined results produced by
- * CyberCrowd-Core.
+ * Layer:
+ * CORE / Capability Result Delivery Boundary
  *
- * It receives CyberServiceResultEnvelope artifacts and defines
- * where neutral results may be delivered without interpreting
- * identity, inferring intent, creating authority, or predicting
- * behavior.
+ * ONE JOB:
+ * Preserve the structural routing boundary for
+ * capability-defined results produced by CyberCrowd-Core.
  *
- * It does not:
- * - contain identity
- * - contain intent
- * - grant permissions
- * - create authority
- * - infer meaning
- * - predict behavior
- * - select human treatment
+ * Owns:
+ * - CyberService result routing artifact shape
+ * - neutral result delivery reference
+ * - routing lifecycle state
+ * - execution lineage preservation
+ * - sovereignty boundary separation
  *
- * CyberServiceResultRoutingEnvelope only:
- * - receives neutral capability results
- * - declares structural destination routing
- * - preserves execution lineage
- * - maintains sovereignty boundaries
- * - separates result delivery from interpretation
+ * Does NOT Own:
+ * - identity
+ * - intent
+ * - permissions
+ * - authority creation
+ * - meaning interpretation
+ * - behavior prediction
+ * - human treatment selection
+ * - user profiling
+ * - analytics
+ * - surveillance
+ * - NET surface handling
+ * - UI rendering
+ *
+ * Boundary:
+ * CyberServiceResultEnvelope enters CORE.
+ * Routing envelope defines structural delivery destination.
+ * No interpretation or enrichment occurs.
+ *
+ * Security:
+ * - No hidden synchronization
+ * - No identity binding
+ * - No intent inference
+ * - No behavioral modeling
+ * - No authority escalation
+ *
+ * Doctrine:
+ * Result Routing ≠ Interpretation
+ * Result Delivery ≠ Authority
+ * Capability Output ≠ Identity Intelligence
  */
+
+// cybercrowd-service-result-routing-envelope.ts
 
 import { CyberServiceResultEnvelope } from "./cybercrowd-service-result-envelope";
 
@@ -63,21 +85,12 @@ export interface CyberServiceResultRoutingEnvelope {
   /**
    * Destination reference.
    *
-   * Selects delivery location or subsystem.
-   *
-   * Does not:
-   * - select human treatment
-   * - infer preference
-   * - create recommendation
+   * Structural delivery reference only.
    */
   destinationRef: string;
 
   /**
    * Passive routing lifecycle state.
-   *
-   * Not interpretation.
-   * Not execution.
-   * Not authority.
    */
   routingState: "READY" | "DELIVERED" | "FAILED";
 }
@@ -85,20 +98,16 @@ export interface CyberServiceResultRoutingEnvelope {
 /**
  * Build a CyberServiceResultRoutingEnvelope artifact.
  *
- * Creates the CyberCrowd-Core result routing membrane:
- *
  * CyberServiceResultEnvelope:
  *   bounded capability result
  *
  * CyberServiceResultRoutingEnvelope:
  *   structural delivery path
  *
- * It does not:
- * - interpret results
- * - profile users
- * - infer intent
- * - predict behavior
- * - modify sovereignty
+ * No interpretation.
+ * No profiling.
+ * No prediction.
+ * No authority changes.
  */
 export function buildCyberServiceResultRoutingEnvelope(
   result: CyberServiceResultEnvelope,
