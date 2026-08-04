@@ -1,6 +1,6 @@
 /**
  * cybercrowd-arena-floor-system.ts
- *
+ * CORE-file
  * CyberCrowd Arena Floor System
  *
  * ONE JOB:
