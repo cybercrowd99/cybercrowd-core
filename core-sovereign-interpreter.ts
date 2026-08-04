@@ -1,6 +1,8 @@
 /**
  * CyberCrowd — CORE Sovereign Interpreter V1
  *
+ * CyberCrowd-Core — Sovereignty Interpretation Boundary
+ *
  * Purpose:
  * - Interpret the CoreSovereignBinding inside the CORE 13-organ interpretation boundary.
  * - Produce a bounded, immutable, non-authoritative sovereign interpretation object.
