@@ -1,6 +1,8 @@
 /**
  * cybercrowd-atomic-kricket-broadcast.ts
  *
+ * CyberCrowd-Core — Atomic Kricket Broadcast Organ
+ *
  * Atomic Kricket Broadcast Engine
  *
  * ONE JOB:
@@ -15,6 +17,13 @@
  * - collisions
  * - seed survival
  * - atomic kicks
+ *
+ * It does not:
+ * - expose public surfaces
+ * - perform audience routing
+ * - create identity authority
+ * - interpret outcomes
+ * - modify source decisions
  */
 
 export const CyberCrowdAtomicKricketBroadcast = (() => {
@@ -78,4 +87,3 @@ export const CyberCrowdAtomicKricketBroadcast = (() => {
     list
   };
 })();
-
