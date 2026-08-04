@@ -1,6 +1,8 @@
 /**
  * CyberCrowd — CyberCrowd Service Engine
  *
+ * CyberCrowd-Core — CyberCrowd Service Execution Organ
+ *
  * CyberCrowdServiceEngine is the first true CyberCrowd-Core organ.
  * It consumes CyberServiceActionExecutionEnvelope artifacts and
  * performs capability-driven operations.
