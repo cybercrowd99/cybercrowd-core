@@ -1,6 +1,8 @@
 /**
  * CORE NET — Connection Envelope
  *
+ * CyberCrowd-Core — CORE → NET Connection Envelope Boundary Artifact
+ *
  * CoreNetConnectionEnvelope is the sealed CORE → NET containment
  * artifact responsible for wrapping the CoreNetConnectionIntake
  * before any NET subsystem is permitted to evaluate or process
