@@ -1,6 +1,8 @@
 /**
  * CyberCrowd — CORE NET uIDL Organ Receiver
  *
+ * CyberCrowd-Core — CORE uIDL Organ Boundary Receiver Artifact
+ *
  * ONE JOB:
  * Receive routed CoreNetUIDLBridge artifacts at a CORE organ
  * boundary without interpreting identity, intent, permissions,
