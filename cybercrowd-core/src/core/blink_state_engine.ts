@@ -15,3 +15,4 @@ export function advanceToTakeover(packet: SignalPacket): SignalPacket {
 export function advanceToArchive(packet: SignalPacket): SignalPacket {
   return setBlink(packet, 'ARCHIVE');
 }
+
