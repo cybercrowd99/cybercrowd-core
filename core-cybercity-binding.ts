@@ -1,6 +1,6 @@
 /**
  * CORE — CyberCity Binding
- *
+ * 
  * CoreCyberCityBinding is the passive CORE-side receiving artifact
  * for CyberCity structural presence.
  *
