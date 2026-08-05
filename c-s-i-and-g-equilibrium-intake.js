@@ -1,6 +1,6 @@
 // c-s-i-and-g-equilibrium-intake.js
 // CyberCrowd — Equilibrium Intake Bridge
-//
+// 
 // Owns:
 // - one safe intake point for incoming signals
 // - calls the Equilibrium Core first
