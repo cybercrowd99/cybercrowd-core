@@ -1,4 +1,4 @@
-// CyberCrowd CyberShop
+// CyberCrowd CyberShop Core
 // Commerce Receipt Model
 //
 // Purpose:
