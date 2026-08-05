@@ -1,5 +1,6 @@
 /**
  * CORE
+ *
  * Exact path: core/session/liveness-lease-heartbeat.js
  * Title: Liveness Lease Heartbeat
  * Purpose: Maintain a live session lease through ordered heartbeat renewal
