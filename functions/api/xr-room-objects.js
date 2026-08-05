@@ -1,7 +1,7 @@
 /**
  * functions/api/xr-room-objects.js
  *
- * CyberCrowd XR Room Objects
+ * CyberCrowd XR Room Objects 
  *
  * ONE JOB:
  * Maintain the XR room objects state domain.
