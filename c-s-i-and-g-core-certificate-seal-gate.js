@@ -1,6 +1,6 @@
 // c-s-i-and-g-core-certificate-seal-gate.js
 // CyberCrowd — Core Certificate Seal Gate
-//
+// 
 // Owns:
 // - receiving Core release-ready records
 // - sealing authority release certificates through the Authority Certificate Ledger
