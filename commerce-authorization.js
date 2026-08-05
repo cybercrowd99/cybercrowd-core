@@ -1,6 +1,6 @@
 // CyberCrowd CyberShop
 // Commerce Authorization Model
-//
+// 
 // Purpose:
 // Preserve transaction-linked authorization evidence
 // for CyberShop lifecycle actions.
