@@ -1,6 +1,6 @@
 /**
  * CORE — Financial Organ Lifecycle
- *
+ *  
  * The CORE Financial Organ Lifecycle provides bounded structural
  * progression for the CCF financial organ binding.
  *
