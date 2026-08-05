@@ -1,6 +1,6 @@
 /**
  * CORE — Financial Organ Dewey Map
- *
+ * 
  * The CORE Financial Organ Dewey Map provides bounded structural
  * organization for the CCF financial organ binding.
  *
