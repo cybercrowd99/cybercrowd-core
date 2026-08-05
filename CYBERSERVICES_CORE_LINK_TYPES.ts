@@ -1,5 +1,5 @@
 /**
- * CyberServices Core Link Types
+ * CyberServices Core Link Types 
  *
  * ONE JOB:
  * Define stable linkage data contracts between CyberServices and CORE.
