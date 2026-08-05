@@ -1,6 +1,6 @@
 // c-s-i-and-g-000-future.js
 // CyberCrowd — 000 Future / Sci-Fi / Unclassified Lane
-//
+// 
 // The Null Horizon:
 // where unknown, mixed, premature, failed, future, impossible,
 // or not-yet-Dewey-classified signals are preserved without tilt or authority.
