@@ -1,5 +1,5 @@
 /**
- * CyberServices Core Link Service
+ * CyberServices Core Link Service 
  *
  * ONE JOB:
  * Provide a stable service boundary for CORE link handling.
