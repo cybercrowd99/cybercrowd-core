@@ -1,5 +1,6 @@
 /**
  * CORE
+ *
  * Exact path: core/turnstile/ephemeral-u-joint-vacuum-quarantine-route.js
  * Title: Ephemeral U-Joint Vacuum Quarantine Route
  * Purpose: Convert one immutable Biff HOLD decision into an isolated,
