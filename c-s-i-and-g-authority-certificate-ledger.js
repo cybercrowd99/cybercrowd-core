@@ -1,6 +1,6 @@
 // c-s-i-and-g-authority-certificate-ledger.js
 // CyberCrowd — Authority Certificate Ledger
-//
+// 
 // Owns:
 // - recording authority release certificates
 // - preserving proof that release passed bundle + depth gates
