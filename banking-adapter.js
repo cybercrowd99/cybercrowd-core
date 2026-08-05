@@ -1,6 +1,6 @@
 // CyberCrowd CyberShop
 // Banking Adapter Model
-//
+// 
 // Purpose:
 // Preserve the external banking-provider adapter boundary
 // connected to CyberShop commerce lifecycle records.
