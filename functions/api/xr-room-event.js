@@ -1,7 +1,7 @@
 /**
  * functions/api/xr-room-event.js
  *
- * CyberCrowd XR Room Event
+ * CyberCrowd XR Room Event 
  *
  * ONE JOB:
  * Store validated XR room events after they have been wrapped
@@ -478,3 +478,4 @@ function json(data, status = 200) {
     }
   );
 }
+
