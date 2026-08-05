@@ -1,6 +1,6 @@
 // c-s-i-and-g-core-audio-ping-peg-context-ledger-bridge.js
 // CyberCrowd — Core Audio Ping Peg Context Ledger Bridge
-//
+// 
 // Owns:
 // - receiving audio ping / peg evidence bundle context records
 // - extracting evidence-only bundle context
