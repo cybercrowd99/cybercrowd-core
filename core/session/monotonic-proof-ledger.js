@@ -1,5 +1,6 @@
 /**
  * CORE
+ *
  * Exact path: core/session/monotonic-proof-ledger.js
  * Title: Monotonic Proof Ledger
  * Purpose: Append ordered proof records to one live session without allowing
