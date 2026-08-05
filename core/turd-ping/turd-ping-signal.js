@@ -1,4 +1,5 @@
 // core/turd-ping/turd-ping-signal.js
+//
 // Lane: core/turd-ping/
 // Owns: object/result signal, found signal, match signal, resolved signal, clearable ping shape.
 // Does Not Own: UI, NET, login, payment, upload, analytics, URLs, routes, tokens, tracking, storage, routing.
