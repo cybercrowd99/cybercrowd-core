@@ -1,6 +1,6 @@
 /**
  * CORE — CyberCity Continuity
- *
+ * 
  * CoreCyberCityContinuity is the passive CORE continuity artifact
  * following CoreCyberCityBinding.
  *
