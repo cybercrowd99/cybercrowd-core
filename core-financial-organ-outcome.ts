@@ -1,6 +1,8 @@
 /**
  * CORE — Financial Organ Outcome
  *
+ * CyberCrowd-Core — CORE Financial Organ Outcome Boundary Artifact
+ *
  * The CORE Financial Organ Outcome provides a bounded structural
  * disposition layer for the CCF financial organ binding.
  *
