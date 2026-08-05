@@ -1,6 +1,6 @@
 // c-s-i-and-g-core-evidence-review-ledger.js
 // CyberCrowd — Core Evidence Review Ledger
-//
+// 
 // Owns:
 // - receiving evidence-candidate packets returned from NET
 // - preserving provider outcome evidence as Core review material
