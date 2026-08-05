@@ -1,6 +1,6 @@
 // c-s-i-and-g-core-dewey-return-receiver.js
 // CyberCrowd — Core Dewey Return Receiver
-//
+// 
 // Owns:
 // - receiving candidate-only Dewey return records from the NET witness cycle
 // - validating that Dewey return material is candidate-only and non-authoritative
