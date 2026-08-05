@@ -1,6 +1,6 @@
 // c-s-i-and-g-core-audio-ping-peg-evidence-receiver.js
 // CyberCrowd — Core Audio Ping Peg Evidence Receiver
-//
+// 
 // Owns:
 // - receiving NET-returned audio ping / peg evidence candidate records
 // - validating Spotify / Pandora / future audio provider evidence candidates
