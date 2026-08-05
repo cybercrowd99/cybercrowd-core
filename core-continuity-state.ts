@@ -74,3 +74,4 @@ export function buildCoreContinuityState(
 
   return Object.freeze(artifact);
 }
+
