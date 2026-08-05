@@ -1,4 +1,5 @@
 // core/identity/identity-authority-context.js
+//
 // Lane: core/identity/
 // Owns: authority context, ownership boundary, parent-ready value attachment.
 // Does Not Own: UI, NET, login, payment processing, upload, analytics, URLs, routes, tokens, tracking, storage.
