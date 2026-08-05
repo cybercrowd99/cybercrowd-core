@@ -1,4 +1,5 @@
 // js/pixelprix-voice.js
+//
 // PixelPrix — Voice Layer
 // Owns: optional mic fun, “What is it?” prompt, family voice labels, immediate playback, cleanup replay.
 // Does not own: camera permission, camera capture, HTML layout, CyberCade page, uploads, sync, accounts, analytics, or provider transport.
