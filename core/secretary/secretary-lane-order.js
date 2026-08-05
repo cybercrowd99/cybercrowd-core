@@ -1,4 +1,5 @@
 // core/secretary/secretary-lane-order.js
+//
 // Lane: core/secretary/
 // Owns: lane order, allowed movement, denied movement, authority-needed decision.
 // Does Not Own: UI, NET, login, upload, analytics, URLs, routes, tokens, tracking, classification, proof.
