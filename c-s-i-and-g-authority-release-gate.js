@@ -1,6 +1,6 @@
 // c-s-i-and-g-authority-release-gate.js
 // CyberCrowd — Authority Release Gate
-//
+// 
 // Owns:
 // - final release review after bundle readiness
 // - requiring depth equilibrium before authority can be released
