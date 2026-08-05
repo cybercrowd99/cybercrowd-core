@@ -1,6 +1,6 @@
 // c-s-i-and-g-core-audio-ping-peg-bundle-bridge.js
 // CyberCrowd — Core Audio Ping Peg Bundle Bridge
-//
+// 
 // Owns:
 // - receiving reviewed Core audio ping / peg evidence records
 // - extracting Core evidence review results
