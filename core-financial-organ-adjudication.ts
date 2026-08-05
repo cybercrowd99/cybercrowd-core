@@ -1,6 +1,6 @@
 /**
  * CORE — Financial Organ Adjudication
- *
+ * 
  * The CORE Financial Organ Adjudication provides bounded structural
  * evaluation for the CCF financial organ binding.
  *
