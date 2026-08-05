@@ -1,6 +1,6 @@
 /**
  * CyberCrowd CORE Deployment Diagnostic
- *
+ * 
  * Purpose:
  * - Verify CORE worker execution environment.
  * - Verify bindings visibility.
