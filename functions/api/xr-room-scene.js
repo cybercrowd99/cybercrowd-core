@@ -1,7 +1,7 @@
 /**
  * functions/api/xr-room-scene.js
  *
- * CyberCrowd XR Room Scene
+ * CyberCrowd XR Room Scene 
  *
  * ONE JOB:
  * Maintain the XR room scene state domain.
