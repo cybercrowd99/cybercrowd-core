@@ -1,6 +1,6 @@
 // c-s-i-and-g-core-bundle-candidate-gate.js
 // CyberCrowd — Core Bundle Candidate Gate
-//
+// 
 // Owns:
 // - receiving bundle-ready context from Core support bridges
 // - checking whether evidence context can become a bundle candidate
