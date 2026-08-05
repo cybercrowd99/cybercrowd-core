@@ -1,6 +1,6 @@
 // c-s-i-and-g-core-bundle-formation-gate.js
 // CyberCrowd — Core Bundle Formation Gate
-//
+// 
 // Owns:
 // - receiving ready bundle-context candidates from the Core Bundle Context Ledger
 // - converting separated lane context into Equilibrium Bundle input
