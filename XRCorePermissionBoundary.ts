@@ -1,6 +1,6 @@
 // src/xr/XRCorePermissionBoundary.ts
 // CyberCrowd XR Core Permission Boundary
-//
+// 
 // Core lane organ.
 //
 // Purpose:
