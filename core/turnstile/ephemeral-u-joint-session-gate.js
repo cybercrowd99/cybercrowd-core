@@ -1,5 +1,6 @@
 /**
  * CORE
+ *
  * Exact path: core/turnstile/ephemeral-u-joint-session-gate.js
  * Title: Ephemeral U-Joint Session Gate
  * Purpose: Enforce the only authorized transition between the Ephemeral
