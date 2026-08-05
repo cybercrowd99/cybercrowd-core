@@ -1,6 +1,6 @@
 // CyberCrowd CyberShop
 // Commerce Agreement Model
-//
+// 
 // Purpose:
 // Preserve accepted exchange terms
 // between CyberShop participants.
