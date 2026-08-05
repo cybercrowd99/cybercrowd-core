@@ -1,6 +1,6 @@
 // c-s-i-and-g-equilibrium-pipeline.js
 // CyberCrowd — Equilibrium Pipeline
-//
+// 
 // Owns:
 // - one controlled pass through intake, bundle, release, and certificate
 // - connecting the already-built CSI&G equilibrium modules
