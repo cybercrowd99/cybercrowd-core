@@ -1,4 +1,5 @@
 // js/pixelprix-songs.js
+//
 // PixelPrix Core — Song Layer
 // Owns: optional computer guide songs for PixelPrix game energy.
 // Does not own: HTML layout, camera permission, camera capture, mic recording, voice labels, describe layer, lingo layer, NET, uploads, sync, accounts, analytics, or provider transport.
