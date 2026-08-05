@@ -1,5 +1,6 @@
 /**
  * CORE
+ *
  * Exact path: core/turnstile/ephemeral-u-joint-validator.js
  * Title: Ephemeral U-Joint Validator
  * Purpose: Validate one untrusted input envelope before it reaches classification,
