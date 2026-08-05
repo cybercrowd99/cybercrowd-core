@@ -1,6 +1,8 @@
 /**
  * CORE — Financial Organ Surface
  *
+ * CyberCrowd-Core — CORE Financial Organ Surface Boundary Artifact
+ *
  * The CORE Financial Organ Surface provides the bounded structural
  * presentation layer for the CCF financial organ binding.
  *
