@@ -1,5 +1,5 @@
 /**
- * CORE CONTINUITY — Intake
+ * CORE CONTINUITY — Intake 
  *
  * CoreContinuityIntake is the internal CORE boundary artifact
  * following CoreContinuityState.
