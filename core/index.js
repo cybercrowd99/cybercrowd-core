@@ -1,4 +1,5 @@
 // core/index.js
+//
 // Lane: core/
 // Owns: single local CyberCrowd Core entry point.
 // Does Not Own: UI, NET, login, payment, upload, analytics, URLs, routes, tokens, tracking, storage.
