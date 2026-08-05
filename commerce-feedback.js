@@ -1,6 +1,6 @@
 // CyberCrowd CyberShop
 // Commerce Feedback Model
-//
+// 
 // Purpose:
 // Preserve participant feedback evidence
 // inside the CyberShop commerce lifecycle.
