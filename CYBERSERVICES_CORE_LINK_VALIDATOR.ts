@@ -1,5 +1,5 @@
 /**
- * CyberServices Core Link Validator
+ * CyberServices Core Link Validator 
  *
  * ONE JOB:
  * Validate CORE link records for structural correctness.
