@@ -1,6 +1,6 @@
 /**
  * CORE — Financial Organ Binding
- *
+ * 
  * The CORE Financial Organ Binding provides the bounded structural
  * attachment point between CORE and the CryptoCureFinancial (CCF)
  * financial organ.
