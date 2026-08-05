@@ -1,6 +1,6 @@
 // CyberCrowd CyberShop
 // Commerce Dispute Model
-//
+// 
 // Purpose:
 // Preserve disagreement-state evidence inside
 // the CyberShop commerce lifecycle.
