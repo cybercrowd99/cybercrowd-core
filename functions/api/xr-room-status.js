@@ -1,7 +1,7 @@
 /**
  * functions/api/xr-room-status.js
  *
- * CyberCrowd XR Room Status
+ * CyberCrowd XR Room Status 
  *
  * ONE JOB:
  * Maintain the XR room status state domain.
