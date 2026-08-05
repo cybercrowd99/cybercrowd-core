@@ -1,5 +1,5 @@
 /**
- * CyberServices Core Link Builder
+ * CyberServices Core Link Builder 
  *
  * ONE JOB:
  * Create CORE link records from supplied linkage facts.
