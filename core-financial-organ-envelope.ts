@@ -1,6 +1,6 @@
 /**
  * CORE — Financial Organ Envelope
- *
+ * 
  * The CORE Financial Organ Envelope provides a bounded structural
  * wrapper for the CCF financial organ binding.
  *
