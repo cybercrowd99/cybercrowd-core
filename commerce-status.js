@@ -1,4 +1,4 @@
-// CyberCrowd CyberShop
+// CyberCrowd CyberShop 
 // Commerce Status Model
 //
 // Purpose:
