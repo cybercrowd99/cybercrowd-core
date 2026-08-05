@@ -1,5 +1,5 @@
 /**
- * CyberCrowd-MDC → CORE — Artifact Registry Binding V1
+ * CyberCrowd-MDC → CORE — Artifact Registry Binding V1 
  *
  * Purpose:
  * - Export sealed MDC artifact registry lineage into CORE.
