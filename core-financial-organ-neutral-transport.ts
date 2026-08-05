@@ -1,40 +1,35 @@
 /**
- * CORE — Financial Organ Neutral Transport
+ * CORE — Financial Organ Outcome
  *
- * The CORE Financial Organ Neutral Transport provides bounded structural
- * movement for CORE financial organ envelopes attached to the CCF
- * constitutional doctrine.
+ * CyberCrowd-Core — CORE Financial Organ Outcome Boundary Artifact
+ *
+ * The CORE Financial Organ Outcome provides a bounded structural
+ * disposition layer for the CCF financial organ binding.
  *
  * It does not:
- * - move money
- * - transfer ownership
- * - authorize transactions
- * - expose financial records
+ * - approve financial activity
+ * - authorize ownership
  * - identify people
- * - create identity relationships
- * - perform routing authority
+ * - create accounts
+ * - record transactions
+ * - become a financial ledger
+ * - infer behavior
+ * - predict outcomes
  *
- * Neutral Transport only:
- * - describes structural movement condition
- * - preserves envelope integrity
- * - maintains sovereignty boundaries
- * - prevents semantic enrichment during movement
+ * Outcome only:
+ * - preserves adjudication results
+ * - maintains structural disposition
+ * - preserves constitutional context
+ * - provides neutral downstream awareness
  */
 
-import { CoreFinancialOrganEnvelope } from "./core-financial-organ-envelope";
-
-/**
- * Structural transport states.
- */
-export type CoreFinancialOrganTransportState =
-  | "READY"
-  | "TRANSFERRED"
-  | "REJECTED";
+import { CoreFinancialOrgan } from "./core-financial-organ-binding";
+import { CoreFinancialOrganAdjudication } from "./core-financial-organ-adjudication";
 
 /**
- * CORE Financial Organ Neutral Transport artifact.
+ * CORE Financial Organ Outcome artifact.
  */
-export interface CoreFinancialOrganNeutralTransport {
+export interface CoreFinancialOrganOutcome {
   /**
    * Constitutional attachment.
    */
@@ -43,36 +38,36 @@ export interface CoreFinancialOrganNeutralTransport {
   /**
    * Artifact discriminator.
    */
-  readonly status: "CORE_FINANCIAL_ORGAN_NEUTRAL_TRANSPORT";
+  readonly status: "CORE_FINANCIAL_ORGAN_OUTCOME";
 
   /**
-   * Preserved organ envelope.
+   * Bound financial organ reference.
    */
-  readonly envelope: CoreFinancialOrganEnvelope;
+  readonly organ: CoreFinancialOrgan;
 
   /**
-   * Structural transport condition.
+   * Preserved adjudication reference.
    */
-  readonly state: CoreFinancialOrganTransportState;
+  readonly adjudication: CoreFinancialOrganAdjudication;
 }
 
 /**
- * Build CORE Financial Organ Neutral Transport.
+ * Build CORE Financial Organ Outcome.
  *
- * Pure structural movement.
+ * Pure structural disposition.
  */
-export function buildCoreFinancialOrganNeutralTransport(
-  envelope: CoreFinancialOrganEnvelope,
-  state: CoreFinancialOrganTransportState
-): CoreFinancialOrganNeutralTransport {
-  const artifact: CoreFinancialOrganNeutralTransport = {
+export function buildCoreFinancialOrganOutcome(
+  organ: CoreFinancialOrgan,
+  adjudication: CoreFinancialOrganAdjudication
+): CoreFinancialOrganOutcome {
+  const artifact: CoreFinancialOrganOutcome = {
     doctrine: "CCF_Constitution_Attachment",
 
-    status: "CORE_FINANCIAL_ORGAN_NEUTRAL_TRANSPORT",
+    status: "CORE_FINANCIAL_ORGAN_OUTCOME",
 
-    envelope,
+    organ,
 
-    state,
+    adjudication,
   };
 
   return Object.freeze(artifact);
