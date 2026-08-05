@@ -1,6 +1,6 @@
 // c-s-i-and-g-core-organ-status-ledger.js
 // CyberCrowd — CSI&G Core Organ Status Ledger
-//
+// 
 // Owns:
 // - recording readable CSI&G Core organ status snapshots
 // - preserving pass / pending / held / rejected organ states
