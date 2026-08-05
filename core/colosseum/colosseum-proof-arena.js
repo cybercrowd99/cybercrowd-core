@@ -1,4 +1,5 @@
 // core/colosseum/colosseum-proof-arena.js
+//
 // Lane: core/colosseum/
 // Owns: proof by play, before/after state, challenge arena, visible result, resolved state.
 // Does Not Own: UI, NET, login, payment, upload, analytics, URLs, routes, tokens, tracking, storage, camera, microphone.
