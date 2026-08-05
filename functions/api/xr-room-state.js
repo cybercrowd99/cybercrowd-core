@@ -1,7 +1,7 @@
 /**
  * functions/api/xr-room-state.js
  *
- * CyberCrowd XR Room State
+ * CyberCrowd XR Room State 
  *
  * ONE JOB:
  * Maintain the current XR room state snapshot.
