@@ -1,4 +1,5 @@
 // core/moment/moment-memory-seed.js
+//
 // Lane: core/moment/
 // Owns: replay-safe memory seed, value preservation, clearable ping meaning.
 // Does Not Own: UI, NET, login, payment, upload, analytics, URLs, routes, tokens, tracking, storage.
