@@ -1,6 +1,6 @@
 // c-s-i-and-g-core-evidence-bundle-bridge.js
 // CyberCrowd — Core Evidence to Bundle Bridge
-//
+// 
 // Owns:
 // - receiving reviewed Core evidence records
 // - preparing evidence context for future equilibrium bundles
