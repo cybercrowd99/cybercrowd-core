@@ -1,6 +1,6 @@
 // c-s-i-and-g-net-handoff-contract.js
 // CyberCrowd — Core to NET Handoff Contract
-//
+// 
 // Owns:
 // - converting certificate-ready equilibrium results into NET-ready envelopes
 // - proving NET only receives released, certified, non-executed authority state
