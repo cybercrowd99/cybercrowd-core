@@ -1,4 +1,5 @@
 // js/pixelprix-lingo.js
+//
 // PixelPrix Core — Lingo Layer
 // Owns: Biff question, Dewey bucket hints, translated cleanup words, local-only object pings.
 // Does not own: HTML layout, camera permission, camera capture, mic recording, song layer, NET, uploads, sync, accounts, analytics, or provider transport.
