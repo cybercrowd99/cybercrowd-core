@@ -1,6 +1,6 @@
 // c-s-i-and-g-core-release-return-gate.js
 // CyberCrowd — Core Release Return Gate
-//
+// 
 // Owns:
 // - receiving formed Core equilibrium bundles
 // - sending formed bundles into the Authority Release Gate
