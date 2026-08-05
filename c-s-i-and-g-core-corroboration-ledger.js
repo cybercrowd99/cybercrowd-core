@@ -1,6 +1,6 @@
 // c-s-i-and-g-core-corroboration-ledger.js
 // CyberCrowd — Core Corroboration Ledger
-//
+// 
 // Owns:
 // - receiving low-trust Core evidence lane context records
 // - grouping evidence by provider / intent / subject / context target
