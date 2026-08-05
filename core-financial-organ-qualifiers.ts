@@ -1,6 +1,8 @@
 /**
  * CORE — Financial Organ Qualifiers
  *
+ * CyberCrowd-Core — CORE Financial Organ Qualifiers Boundary Artifact
+ *
  * The CORE Financial Organ Qualifiers provide bounded structural
  * descriptors for the CCF financial organ binding.
  *
