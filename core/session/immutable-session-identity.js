@@ -1,5 +1,6 @@
 /**
  * CORE
+ *
  * Exact path: core/session/immutable-session-identity.js
  * Title: Immutable Session Identity
  * Purpose: Create one session identity and prevent every downstream system
