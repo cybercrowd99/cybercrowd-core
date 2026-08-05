@@ -1,6 +1,6 @@
 /**
  * CORE — Financial Organ Context
- *
+ * 
  * The CORE Financial Organ Context provides bounded structural
  * awareness for the CCF financial organ binding.
  *
