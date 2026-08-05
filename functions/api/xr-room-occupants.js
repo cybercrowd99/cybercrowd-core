@@ -1,7 +1,7 @@
 /**
  * functions/api/xr-room-occupants.js
  *
- * CyberCrowd XR Room Occupants
+ * CyberCrowd XR Room Occupants 
  *
  * ONE JOB:
  * Maintain the XR room occupants state domain.
