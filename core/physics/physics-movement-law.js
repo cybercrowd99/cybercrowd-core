@@ -1,4 +1,5 @@
 // core/physics/physics-movement-law.js
+//
 // Lane: core/physics/
 // Owns: movement rules, constraints, behavior boundaries, function-over-product continuity.
 // Does Not Own: UI, NET, login, payment, upload, analytics, URLs, routes, tokens, tracking, storage, authority.
