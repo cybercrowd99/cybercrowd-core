@@ -1,4 +1,5 @@
 // core/halo/halo-room-signal.js
+//
 // Lane: core/halo/
 // Owns: room guide signal, mission framing, next safe action.
 // Does Not Own: UI, NET, login, upload, analytics, URLs, routes, tokens, tracking.
