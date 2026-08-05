@@ -1,6 +1,6 @@
 // src/xr/XRCoreAuthorityBoundary.ts
 // CyberCrowd XR Core Authority Boundary
-//
+// 
 // Core lane organ.
 //
 // Purpose:
