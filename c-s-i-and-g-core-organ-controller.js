@@ -1,6 +1,6 @@
 // c-s-i-and-g-core-organ-controller.js
 // CyberCrowd — CSI&G Core Organ Controller
-//
+// 
 // Owns:
 // - tying the CSI&G Core proof ladder into one organ-facing controller
 // - receiving safe Core inputs
