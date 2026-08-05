@@ -1,4 +1,5 @@
 // js/pixelprix-describe.js
+//
 // PixelPrix Core — Describe Layer
 // Owns: "What is it?", typed treasure names, phonics / sounds-like labels, cleanup name display.
 // Does not own: HTML layout, camera permission, camera capture, mic recording, song layer, NET, uploads, sync, accounts, analytics, or provider transport.
