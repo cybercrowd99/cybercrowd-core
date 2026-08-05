@@ -1,6 +1,6 @@
 // c-s-i-and-g-core-bundle-context-ledger.js
 // CyberCrowd — Core Bundle Context Ledger
-//
+// 
 // Owns:
 // - receiving lane context packets before bundle formation
 // - storing evidence, identity, movement, and authority-review context separately
