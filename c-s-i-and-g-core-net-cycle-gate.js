@@ -1,6 +1,6 @@
 // c-s-i-and-g-core-net-cycle-gate.js
 // CyberCrowd — Core NET Cycle Gate
-//
+// 
 // Owns:
 // - receiving sealed Core authority certificate records
 // - verifying sealed certificates before Core-to-NET handoff
