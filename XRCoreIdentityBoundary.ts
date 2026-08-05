@@ -1,6 +1,6 @@
 // src/xr/XRCoreIdentityBoundary.ts
 // CyberCrowd XR Core Identity Boundary
-//
+// 
 // Core lane organ.
 //
 // Purpose:
