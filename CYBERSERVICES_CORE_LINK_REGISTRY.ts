@@ -1,5 +1,5 @@
 /**
- * CyberServices Core Link Registry
+ * CyberServices Core Link Registry 
  *
  * ONE JOB:
  * Store and retrieve validated CORE link records.
