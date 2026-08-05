@@ -1,6 +1,6 @@
 // c-s-i-and-g-core-corroborated-support-bridge.js
 // CyberCrowd — Core Corroborated Support Bridge
-//
+// 
 // Owns:
 // - receiving corroborated Core evidence context
 // - converting corroborated evidence into bundle-support context
