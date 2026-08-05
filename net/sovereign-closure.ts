@@ -1,5 +1,5 @@
 /**
- * CyberCrowd — Sovereign Closure V1
+ * CyberCrowd — Sovereign Closure V1 
  *
  * Purpose:
  * - Seal the completed sovereign projection chain.
