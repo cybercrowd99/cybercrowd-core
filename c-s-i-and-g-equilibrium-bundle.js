@@ -1,6 +1,6 @@
 // c-s-i-and-g-equilibrium-bundle.js
 // CyberCrowd — Equilibrium Authority Bundle
-//
+// 
 // Owns:
 // - forming authority-ready bundles only after lane balance
 // - requiring identity, evidence, movement, and authority review lanes
