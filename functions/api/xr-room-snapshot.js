@@ -1,7 +1,7 @@
 /**
  * functions/api/xr-room-snapshot.js
  *
- * CyberCrowd XR Room Snapshot
+ * CyberCrowd XR Room Snapshot 
  *
  * ONE JOB:
  * Reflect the combined XR room state snapshot.
