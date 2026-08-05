@@ -1,6 +1,6 @@
 // c-s-i-and-g-depth-equilibrium-check.js
 // CyberCrowd — Depth Equilibrium Check
-//
+// 
 // Owns:
 // - detecting superficial / fake equilibrium
 // - checking balance below lane labels
