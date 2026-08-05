@@ -2,7 +2,7 @@
 
 /**
  * CORE CONTINUITY — Exit Intake
- *
+ * 
  * CoreExitIntake is the structural handoff boundary between
  * CBCExitState and any subsequent CORE continuity subsystem.
  *
