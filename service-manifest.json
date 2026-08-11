@@ -1,0 +1,74 @@
+{
+  "cases_version": "1.0",
+  "service_id": "cybercrowd-core",
+  "display_name": "CyberCrowd Core",
+  "service_type": "independent-service",
+  "description": "CyberCrowd CORE service connected through CASES.",
+  "repository": {
+    "provider": "github",
+    "url": "https://github.com/cybercrowd99/cybercrowd-core",
+    "branch": "main",
+    "manifest_path": "/service-manifest.json"
+  },
+  "runtime": {
+    "base_url": "https://cybercrowd-core.cybercrowd.workers.dev",
+    "health_url": "/cases/health",
+    "capabilities_url": "/cases/capabilities",
+    "events_url": "/cases/events"
+  },
+  "owner": {
+    "organization": "cybercrowd99",
+    "contact_url": "https://github.com/cybercrowd99"
+  },
+  "capabilities": [
+    "service_delivery"
+  ],
+  "coach": {
+    "supported": false,
+    "types": []
+  },
+  "connection_surface": {
+    "identity": false,
+    "bookings": false,
+    "payments": false,
+    "storefront": false,
+    "analytics": false,
+    "fleet_location": false,
+    "accessibility": false,
+    "routing": false,
+    "workflow_automation": false,
+    "device_controls": false,
+    "safety": false,
+    "inventory": false,
+    "diagnostics": false
+  },
+  "cases_27": {
+    "enabled": true,
+    "neutrality_values": [
+      "NEGATIVE_ZERO",
+      "ZERO",
+      "POSITIVE_ZERO"
+    ],
+    "positions": {
+      "p1": "system_identification",
+      "p2": "operational_stance",
+      "p3": "cybercrowd_interpretation"
+    },
+    "zero_state": [
+      "ZERO",
+      "ZERO",
+      "ZERO"
+    ]
+  },
+  "security": {
+    "authentication_required": true,
+    "authorization_required": true,
+    "supported_methods": [
+      "oauth2",
+      "signed_requests"
+    ],
+    "webhook_signature_required": true
+  },
+  "status": "pending-registration",
+  "enabled": false
+}
