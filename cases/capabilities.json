@@ -1,0 +1,7 @@
+{
+  "cases_version": "1.0",
+  "service_id": "cybercrowd-core",
+  "capabilities": [
+    "service_delivery"
+  ]
+}
