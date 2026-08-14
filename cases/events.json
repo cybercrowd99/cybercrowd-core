@@ -1,6 +1,0 @@
-{
-  "cases_version": "1.0",
-  "service_id": "cybercrowd-core",
-  "event_surface": "/cases/events",
-  "status": "ready"
-}
