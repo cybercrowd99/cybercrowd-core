@@ -1,6 +1,6 @@
 /**
  * CyberCrowd CORE — Private Worker Entry
- *
+ * 
  * Owns:
  * - private CORE service boundary
  * - internal organ dispatch entry
