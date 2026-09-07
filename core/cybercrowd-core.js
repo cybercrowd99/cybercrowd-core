@@ -23,7 +23,8 @@
       "CLEAR",
       "IDENTITY",
       "MOMENT",
-      "PHYSICS"
+      "PHYSICS",
+      "COMPTROLLER"
     ];
 
     const browserGlobals = {
@@ -37,7 +38,8 @@
       CLEAR: "ClearTrailWipe",
       IDENTITY: "IdentityAuthorityContext",
       MOMENT: "MomentMemorySeed",
-      PHYSICS: "PhysicsMovementLaw"
+      PHYSICS: "PhysicsMovementLaw",
+      COMPTROLLER: "CoreComptrollerBinding"
     };
 
     function availableInBrowser(globalName) {
@@ -73,7 +75,8 @@
         CLEAR: "core/clear",
         IDENTITY: "core/identity",
         MOMENT: "core/moment",
-        PHYSICS: "core/physics"
+        PHYSICS: "core/physics",
+        COMPTROLLER: "core"
       };
 
       return lanes[organ] || "core";
